@@ -7,7 +7,7 @@ En java se conoce ya desde hace mucho tiempo las funciones denominadas anotacion
 
 si bien es muy similar a las anotaciones de java, aun son muy simples y su principal limitante es que no se puede usar más de una anotación en una variable, 
 
-```
+```swift
 @Upercase
 @MaxLenght(10) //(X) Error Property type 'String?' does not match that of the 'wrappedValue' property of its wrapper type 'Email'
 var name: String?
