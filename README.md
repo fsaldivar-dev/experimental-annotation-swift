@@ -114,8 +114,12 @@ struct Model {
 
 
 En el ejemplo se crea un modelo donde tiene las propiedades de email, name y userName dando las siguientes condiciones
+
 **email:** *Se requiere que el valor sea un correo electrónico y el valor este en minúsculas*
+
 **name:** *Se requiere que el valor sea un nombre con una longitud mínima de 3 y máxima de 10*
+
 **name:** *Se requiere que el valor sea un nombre de usuario en minúsculas*
+
 
 Como se observa, las propiedades pueden tener una o más reglas, de está forma se pueden agregar varias reglas para un modelo, pero esta funcionalidad no esta limitada a solo validaciones, se puede usar en anotaciones como las de Resolver @Injection o cualquier otra que no se limite solo a validaciones del modelo.
