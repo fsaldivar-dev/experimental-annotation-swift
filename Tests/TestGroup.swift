@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import esperimental_annotation_swift
+@testable import AnnotationSwift
 struct Mock2Model {
     @GroupSet(Email<String>(),
               LowCase<String>())
