@@ -8,15 +8,15 @@
 import XCTest
 @testable import AnnotationSwift
 struct Mock2Model {
-    @GroupSet(Email<String>(),
+    @ASGroup(Email<String>(),
               LowCase<String>())
     var email: String?
-    @GroupSet(MinLength<String>(minLength: 3),
+    @ASGroup(MinLength<String>(minLength: 3),
               MaxLength<String>(maxLength: 10))
     var min3Max10: String?
 }
 
-class TestGroup: XCTestCase {
+final class TestGroup: XCTestCase {
     func testEmail() {
         let mock = Mock2Model()
         mock.email = "FSALDIVAR.DEV@GMAIL.com"
