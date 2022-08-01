@@ -17,7 +17,8 @@ struct MockModel {
     @MinLength(minLength: 10)
     var wordMin10: String?
 }
-class TestAnnotation: XCTestCase {
+
+final class TestAnnotation: XCTestCase {
 
     func testEmailSuccess() {
         let mockModel = MockModel()
