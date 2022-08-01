@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 @propertyWrapper
 class LowCase<Value: StringProtocol>: Annotation {
     private var value: Value?
@@ -14,16 +15,16 @@ class LowCase<Value: StringProtocol>: Annotation {
     }
     public var wrappedValue: Value? {
         get { return self.value }
-        set { self.value = self.executeAction(wrappedValue: newValue) }
+        set { self.value = self.tranformValue(wrappedValue: newValue) }
     }
-    func initValue<T>(value: T) {
+    func updateValue<T>(value: T) {
         guard let value = value as? Value else {
             return
         }
         self.wrappedValue = value
     }
     
-    func executeAction<T>(wrappedValue: T?) -> T? {
+    func tranformValue<T>(wrappedValue: T?) -> T? {
         guard let stringValue = wrappedValue as? Value else {
             return wrappedValue
         }
