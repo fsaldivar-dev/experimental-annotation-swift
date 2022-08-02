@@ -21,7 +21,7 @@ struct MockModel {
 final class TestAnnotation: XCTestCase {
 
     func testEmailSuccess() {
-        let mockModel = MockModel()
+        var mockModel = MockModel()
         mockModel.email = "fsaldivar.dev@gmail.com"
         XCTAssert(mockModel.email == "fsaldivar.dev@gmail.com")
         
@@ -36,7 +36,7 @@ final class TestAnnotation: XCTestCase {
         
     }
     func testEmailError() {
-        let mockModel = MockModel()
+        var mockModel = MockModel()
         mockModel.email = "fsaldivar dev@gmail.com"
         XCTAssertNil(mockModel.email)
         mockModel.email = "@fsaldivar.dev@hotmail.com"
@@ -53,7 +53,7 @@ final class TestAnnotation: XCTestCase {
     func testMax() {
         let word13 = "1234567891123"
         let spectedString = "1234567891"
-        let mockModel = MockModel()
+        var mockModel = MockModel()
         mockModel.wordMax10 = word13
         XCTAssertNil(mockModel.wordMax10)
         mockModel.wordMax10 = spectedString
@@ -63,7 +63,7 @@ final class TestAnnotation: XCTestCase {
     func testMin() {
         let spectedString = "1234567891123"
         let word9  = "123456789"
-        let mockModel = MockModel()
+        var mockModel = MockModel()
         mockModel.wordMin10 = word9
         XCTAssertNil(mockModel.wordMin10)
         mockModel.wordMin10 = spectedString

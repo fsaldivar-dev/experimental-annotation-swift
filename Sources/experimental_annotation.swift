@@ -5,6 +5,26 @@
 //  Created by Francisco Javier Saldivar Rubio on 31/07/21.
 //
 
+public protocol ASAnnotationWrapped: ASAnnotation  {
+    associatedtype E
+    var wrappedValue: E? { set get }
+}
+
+extension ASAnnotationWrapped {
+    private mutating func setValue(value: E) {
+        wrappedValue = value
+    }
+    func tranformValue<T>(wrappedValue: T?) -> T? {
+        wrappedValue
+    }
+
+    public mutating func updateValue<T>(value: T) {
+        guard let value = value as? E else {
+            return
+        }
+        wrappedValue = value
+    }
+}
 
 /// El protocolo abstrae el comportamiento de una annotación en Java, la cual
 /// puede iniciar un valor default y procesar el comportamiento cuando sucede un setter
@@ -21,7 +41,7 @@ public protocol ASAnnotation {
     /// la intención de ser implementado en estructuras de tipo **@propertyWrapper**
     /// - Parameter value: wrappedValue heredado de otra anotación., este valor es invocado desde
     /// ``ASAnnotationGroup``
-    func updateValue<T>(value: T)
+    mutating func updateValue<T>(value: T)
 }
 
 
@@ -38,7 +58,7 @@ public protocol ASAnnotation {
 ///         var min3Max10: String?
 ///    }
 ///
-public protocol ASAnnotationGroup: AnyObject {
+public protocol ASAnnotationGroup {
     
     /// Lista de anotaciones, ejemplo
     ///         @GroupSet(Email<String>(),
@@ -49,14 +69,16 @@ public protocol ASAnnotationGroup: AnyObject {
     ///  y actualiza el valor de las copias de `wrappedValue`ejecutando la función `updateValue` de ``ASAnnotation``
     /// - Parameter value: `wrappedValue`del ``@propertyWrapper``.
     /// - Returns:  `wrappedValue` con las converciónes aplicadas de cada ``Annotation``
-    func updateWrapped<T>(value: inout T?) -> T?
+    mutating func updateWrapped<T>(value: inout T?) -> T?
 }
 
 extension ASAnnotationGroup {
     
-    public func updateWrapped<T>( value: inout T?) -> T? {
+    mutating public func updateWrapped<T>( value: inout T?) -> T? {
         self.annotations.forEach({ value = $0.tranformValue(wrappedValue: value) })
-        self.annotations.forEach({ $0.updateValue(value: value) })
+        for var item in annotations {
+            item.updateValue(value: value)
+        }
         return value
     }
 }
@@ -72,8 +94,7 @@ extension ASAnnotationGroup {
 ///         var userName: String?
 ///    }
 ///
-public class ASGroup<SetValue>: ASAnnotationGroup {
-    
+public struct ASGroup<SetValue>: ASAnnotationGroup {
     
     private var service: SetValue?
     public var annotations: [ASAnnotation]

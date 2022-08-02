@@ -7,7 +7,7 @@
 
 import Foundation
 @propertyWrapper
-public final class Email<Value: StringProtocol>: ASAnnotation {
+public struct Email<Value: StringProtocol>: ASAnnotationWrapped {
     private var value: Value?
     
     public init(wrappedValue value: Value? = nil) {
@@ -17,13 +17,6 @@ public final class Email<Value: StringProtocol>: ASAnnotation {
     public var wrappedValue: Value? {
         get { return self.value }
         set { self.value = self.tranformValue(wrappedValue: newValue) }
-    }
-    
-    public func updateValue<T>(value: T) {
-        guard let value = value as? Value else {
-            return
-        }
-        wrappedValue = value
     }
     
     public func tranformValue<T>(wrappedValue: T?) -> T? {
