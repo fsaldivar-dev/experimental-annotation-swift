@@ -7,7 +7,7 @@
 
 import Foundation
 @propertyWrapper
-public final class MaxLength<Value: StringProtocol>: ASAnnotation {
+public struct MaxLength<Value: StringProtocol>: ASAnnotationWrapped {
     private var value: Value?
     private var maxLength: Int
     public var wrappedValue: Value? {
@@ -17,15 +17,6 @@ public final class MaxLength<Value: StringProtocol>: ASAnnotation {
     
     public init(wrappedValue value: Value? = nil, maxLength: Int) {
         self.maxLength = maxLength
-        self.wrappedValue = value
-    }
-    
-    
-    
-    public func updateValue<T>(value: T) {
-        guard let value = value as? Value else {
-            return
-        }
         self.wrappedValue = value
     }
     
@@ -46,9 +37,10 @@ public final class MaxLength<Value: StringProtocol>: ASAnnotation {
 }
 
 @propertyWrapper
-public final class MinLength<Value: StringProtocol>: ASAnnotation {
+public struct MinLength<Value: StringProtocol>: ASAnnotationWrapped {
     private var value: Value?
     private var minLength: Int
+
     public var wrappedValue: Value? {
         get { return self.value }
         set { self.value = self.tranformValue(wrappedValue: newValue) }
@@ -57,13 +49,6 @@ public final class MinLength<Value: StringProtocol>: ASAnnotation {
     public init(wrappedValue: Value? = nil, minLength: Int) {
         self.minLength = minLength
         self.wrappedValue = wrappedValue
-    }
-    
-    public func updateValue<T>(value: T) {
-        guard let value = value as? Value else {
-            return
-        }
-        self.wrappedValue = value
     }
     
     public  func tranformValue<T>(wrappedValue: T?) -> T? {
