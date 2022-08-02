@@ -7,7 +7,7 @@
 
 import Foundation
 @propertyWrapper
-public final class MaxLength<Value: StringProtocol>: Annotation {
+public final class MaxLength<Value: StringProtocol>: ASAnnotation {
     private var value: Value?
     private var maxLength: Int
     public var wrappedValue: Value? {
@@ -46,7 +46,7 @@ public final class MaxLength<Value: StringProtocol>: Annotation {
 }
 
 @propertyWrapper
-public final class MinLength<Value: StringProtocol>: Annotation {
+public final class MinLength<Value: StringProtocol>: ASAnnotation {
     private var value: Value?
     private var minLength: Int
     public var wrappedValue: Value? {
