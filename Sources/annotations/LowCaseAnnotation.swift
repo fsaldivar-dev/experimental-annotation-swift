@@ -8,7 +8,7 @@
 import Foundation
 
 @propertyWrapper
-class LowCase<Value: StringProtocol>: Annotation {
+class LowCase<Value: StringProtocol>: ASAnnotation {
     private var value: Value?
     init(wrappedValue value: Value? = nil) {
         self.wrappedValue = value
