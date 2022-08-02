@@ -22,15 +22,15 @@ Swift Package Manager es una herramienta para automatizar la distribución de c�
 
 
 Una vez que haya configurado su paquete Swift, agregar experimental-annotation-swift como dependencia es tan fácil como agregarlo al valor de dependencias de su Package.swift.
-```
+```swift
 dependencies: [
     .package(url: "https://github.com/JavierSaldivarRubio/esperimental-annotation-swift", .upToNextMajor(from: "0.0.1"))
 ]
 ```
 
 ### CocoaPods
+[CocoaPods](https://cocoapods.org) es un administrador de dependencias para proyectos Cocoa. Para obtener instrucciones de uso e instalación, visite su sitio web. Para integrar AnnotationSwift en su proyecto Xcode usando CocoaPods, especifíquelo en su `Podfile`:
 
-[CocoaPods](https://cocoapods.org) es un administrador de dependencias para proyectos Cocoa. Para obtener instrucciones de uso e instalación, visite su sitio web. Para integrar Alamofire en su proyecto Xcode usando CocoaPods, especifíquelo en su `Podfile`:
 
 ```ruby
 pod 'AnnotationSwift'
