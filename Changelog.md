@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.2] - 2021-08-02
 ### Refactor
-- Refactor name library commit from (@fsaldivar-dev)(https://github.com/JavierSaldivarRubio/experimental-annotation-swift/commit/7f09747d4df2c59be4d41da20599d1367b62abee)
+- Refactor name library commit from [@fsaldivar-dev](https://github.com/JavierSaldivarRubio/experimental-annotation-swift/commit/7f09747d4df2c59be4d41da20599d1367b62abee)
 
 ## [0.0.1] - 2021-07-31
 ### Added
-- Add workspace commit(@fsaldivar-dev)(https://github.com/JavierSaldivarRubio/experimental-annotation-swift/commit/c51707fe06fcadaaf39bfde72a267f361299f139)
+- Add workspace commit from [@fsaldivar-dev](https://github.com/JavierSaldivarRubio/experimental-annotation-swift/commit/c51707fe06fcadaaf39bfde72a267f361299f139)
