@@ -7,7 +7,7 @@
 
 import Foundation
 @propertyWrapper
-public final class Email<Value: StringProtocol>: Annotation {
+public final class Email<Value: StringProtocol>: ASAnnotation {
     private var value: Value?
     
     public init(wrappedValue value: Value? = nil) {

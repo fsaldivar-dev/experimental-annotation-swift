@@ -8,7 +8,7 @@
 
 /// El protocolo abstrae el comportamiento de una annotación en Java, la cual
 /// puede iniciar un valor default y procesar el comportamiento cuando sucede un setter
-public protocol Annotation {
+public protocol ASAnnotation {
     
     /// TranformValue: función que valida y configura la transformación del valor,
     /// como el convertir todos los valores de mayuscula a minuscula, etc..
@@ -20,12 +20,12 @@ public protocol Annotation {
     /// Actualiza el varlor wrappedValue, recuerda que este protocolo se creo con
     /// la intención de ser implementado en estructuras de tipo **@propertyWrapper**
     /// - Parameter value: wrappedValue heredado de otra anotación., este valor es invocado desde
-    /// ``AnnotationGroup``
+    /// ``ASAnnotationGroup``
     func updateValue<T>(value: T)
 }
 
 
-/// AnnotationGroup es creado con la intención de lograr agrupar n cantidad de ``Annotation``
+/// AnnotationGroup es creado con la intención de lograr agrupar n cantidad de ``ASAnnotation``
 ///  protocolo se se implementa en un ``@propertyWrapper``.
 ///
 ///     Ejemplo:
@@ -38,13 +38,21 @@ public protocol Annotation {
 ///         var min3Max10: String?
 ///    }
 ///
-public protocol AnnotationGroup: AnyObject {
-    var annotations: [Annotation] { get }
-
+public protocol ASAnnotationGroup: AnyObject {
+    
+    /// Lista de anotaciones, ejemplo
+    ///         @GroupSet(Email<String>(),
+    ///                   LowCase<String>())
+    var annotations: [ASAnnotation] { get }
+    
+    ///  Función que recorre toda la lista de anotaciones y ejecuta la función `tranformValue` de ``ASAnnotation``
+    ///  y actualiza el valor de las copias de `wrappedValue`ejecutando la función `updateValue` de ``ASAnnotation``
+    /// - Parameter value: `wrappedValue`del ``@propertyWrapper``.
+    /// - Returns:  `wrappedValue` con las converciónes aplicadas de cada ``Annotation``
     func updateWrapped<T>(value: inout T?) -> T?
 }
 
-extension AnnotationGroup {
+extension ASAnnotationGroup {
     
     public func updateWrapped<T>( value: inout T?) -> T? {
         self.annotations.forEach({ value = $0.tranformValue(wrappedValue: value) })
@@ -54,13 +62,21 @@ extension AnnotationGroup {
 }
 
 @propertyWrapper
-public class GroupSet<SetValue>: AnnotationGroup {
+/// `ASGroup` es una ``@propertyWrapper`` que agrupa ``ASAnnotation``
+///
+///     Ejemplo:
+///         @GroupSet(Email<String>(),
+///                   LowCase<String>())
+///         var email: String?
+///         @LowCase
+///         var userName: String?
+///    }
+///
+public class ASGroup<SetValue>: ASAnnotationGroup {
+    
+    
     private var service: SetValue?
-    public var annotations: [Annotation]
-
-    public init(_ annotations: Annotation ...) {
-        self.annotations = annotations
-    }
+    public var annotations: [ASAnnotation]
     
     public var wrappedValue: SetValue? {
         get { service}
@@ -69,4 +85,11 @@ public class GroupSet<SetValue>: AnnotationGroup {
             service = updateWrapped(value: &updateValue)
         }
     }
+
+    /// ``@propertyWrapper`` `ASGroup` solo se podra construir con una lista de ``ASAnnotation``
+    /// - Parameter annotations: lista de ``ASAnnotation``
+    public init(_ annotations: ASAnnotation ...) {
+        self.annotations = annotations
+    }
+    
 }
