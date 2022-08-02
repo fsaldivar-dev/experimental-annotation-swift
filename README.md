@@ -7,7 +7,7 @@
 ![GitHub forks:	GitHub forks badge](https://img.shields.io/github/forks/fsaldivar-dev/experimental-annotation-swift)
 ![GitHub stars:	GitHub stars badge](https://img.shields.io/github/stars/fsaldivar-dev/experimental-annotation-swift)
 ![GitHub license:	GitHub license badge](https://img.shields.io/github/license/fsaldivar-dev/experimental-annotation-swift)
-
+![Cocoapods](https://img.shields.io/cocoapods/v/AnnotationSwift)
 
 Librería que se usa para anidar anotaciones
 
