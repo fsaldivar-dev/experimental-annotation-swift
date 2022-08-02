@@ -5,7 +5,7 @@
 
 ![GitHub issues:	GitHub issues badge](https://img.shields.io/github/issues/fsaldivar-dev/experimental-annotation-swift)
 ![GitHub forks:	GitHub forks badge](https://img.shields.io/github/forks/fsaldivar-dev/experimental-annotation-swift)
-![GitHub stars:	GitHub stars badge](https://img.shields.io/github/stars/fsaldivar-dev/experimental-annotation-swift)
+[![GitHub stars](https://img.shields.io/github/stars/fsaldivar-dev/experimental-annotation-swift?style=for-the-badge)](https://github.com/fsaldivar-dev/experimental-annotation-swift/stargazers)
 ![GitHub license:	GitHub license badge](https://img.shields.io/github/license/fsaldivar-dev/experimental-annotation-swift)
 ![Cocoapods](https://img.shields.io/cocoapods/v/AnnotationSwift)
 
