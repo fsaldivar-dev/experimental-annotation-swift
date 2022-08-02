@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'AnnotationSwift'
-  s.version          = '0.0.3'
+  s.version          = '0.0.4'
   s.summary          = 'Librería que permite agrupar multilpes propertywrapers'
   s.homepage         = 'https://github.com/JavierSaldivarRubio/experimental-annotation-swift'
   s.license          = { :type => 'MIT', :file => 'LICENSE.md' }
