@@ -2,6 +2,13 @@
 
 <img width="480" alt="AnnotationSwift" src="https://user-images.githubusercontent.com/16517868/182271709-188b8cfb-1ac7-4e8e-b062-b3ee121bd92f.png">
 
+
+![GitHub issues:	GitHub issues badge](https://img.shields.io/github/issues/fsaldivar-dev/experimental-annotation-swift)
+![GitHub forks:	GitHub forks badge](https://img.shields.io/github/forks/fsaldivar-dev/experimental-annotation-swift)
+![GitHub stars:	GitHub stars badge](https://img.shields.io/github/stars/fsaldivar-dev/experimental-annotation-swift)
+![GitHub license:	GitHub license badge](https://img.shields.io/github/license/fsaldivar-dev/experimental-annotation-swift)
+
+
 Librería que se usa para anidar anotaciones
 
 # Roadmap
