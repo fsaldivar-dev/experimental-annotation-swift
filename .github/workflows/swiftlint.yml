@@ -1,8 +1,9 @@
 name: Lint
-
 on:
+  push:
+    branches: [ master ]
   pull_request:
-    types: ["opened", "reopened", "synchronize"]
+    branches: [ master ]
 
 jobs:
   run-lint:
