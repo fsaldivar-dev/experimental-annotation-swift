@@ -17,7 +17,7 @@ struct Mock2Model {
 }
 
 final class TestGroup: XCTestCase {
-    
+
     func testEmail() {
         var mock = Mock2Model()
         mock.email = "FSALDIVAR.DEV@GMAIL.com"
