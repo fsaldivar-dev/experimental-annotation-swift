@@ -13,8 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    – name: Lint
-      run: swiftlint
     - name: Build
       run: swift build -v
     - name: Run tests
