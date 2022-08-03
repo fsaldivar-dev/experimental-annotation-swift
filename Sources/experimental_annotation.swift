@@ -5,8 +5,7 @@
 //  Created by Francisco Javier Saldivar Rubio on 31/07/21.
 //
 
-public protocol ASAnnotationWrapped: ASAnnotation  {
-
+public protocol ASAnnotationWrapped: ASAnnotation {
     associatedtype Element
     var wrappedValue: Element? { set get }
 }
@@ -101,11 +100,11 @@ public struct ASGroup<SetValue>: ASAnnotationGroup {
     public var annotations: [ASAnnotation]
 
     public var wrappedValue: SetValue? {
+        get { service }
         set {
             var updateValue = newValue
             service = updateWrapped(value: &updateValue)
         }
-        get { service }
     }
 
     /// ``@propertyWrapper`` `ASGroup` solo se podra construir con una lista de ``ASAnnotation``
