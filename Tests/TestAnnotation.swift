@@ -9,6 +9,7 @@ import XCTest
 @testable import AnnotationSwift
 
 struct MockModel {
+
     @Email
     var email: String?
     @MaxLength(maxLength: 10)
@@ -33,8 +34,8 @@ final class TestAnnotation: XCTestCase {
         XCTAssert(mockModel.email == "fsaldivar_dev@yahoo.com.mx")
         mockModel.email = "fsaldivar-dev@yahoo.com.mx"
         XCTAssert(mockModel.email == "fsaldivar-dev@yahoo.com.mx")
-        
     }
+
     func testEmailError() {
         var mockModel = MockModel()
         mockModel.email = "fsaldivar dev@gmail.com"
