@@ -17,6 +17,7 @@ struct Mock2Model {
 }
 
 final class TestGroup: XCTestCase {
+    
     func testEmail() {
         var mock = Mock2Model()
         mock.email = "FSALDIVAR.DEV@GMAIL.com"
@@ -27,6 +28,7 @@ final class TestGroup: XCTestCase {
         mock.email = "fsaldivar.dev@GMAIL.com-"
         XCTAssertNil(mock.email)
     }
+
     func testLenght() {
         var mock = Mock2Model()
         mock.min3Max10 = "ab"
@@ -50,5 +52,4 @@ final class TestGroup: XCTestCase {
         mock.min3Max10 = "1234"
         XCTAssertTrue(mock.min3Max10 == "1234")
     }
-
 }

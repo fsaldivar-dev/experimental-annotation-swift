@@ -6,11 +6,13 @@
 //
 
 public protocol ASAnnotationWrapped: ASAnnotation  {
+
     associatedtype E
     var wrappedValue: E? { set get }
 }
 
 extension ASAnnotationWrapped {
+
     private mutating func setValue(value: E) {
         wrappedValue = value
     }
@@ -112,5 +114,4 @@ public struct ASGroup<SetValue>: ASAnnotationGroup {
     public init(_ annotations: ASAnnotation ...) {
         self.annotations = annotations
     }
-    
 }

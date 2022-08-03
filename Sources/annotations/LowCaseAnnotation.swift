@@ -9,6 +9,7 @@ import Foundation
 
 @propertyWrapper
 public struct LowCase<Value: StringProtocol>: ASAnnotationWrapped {
+    
     private var value: Value?
     
     public init(wrappedValue value: Value? = nil) {
