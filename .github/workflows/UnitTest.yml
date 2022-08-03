@@ -21,7 +21,3 @@ jobs:
       with:
         github-token: ${{ github.token }}
         lcov-file: ./coverage/lcov.info
-    - uses: ziishaned/jest-reporter-action@v0.0.1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        test-command: "yarn jest --coverage"
