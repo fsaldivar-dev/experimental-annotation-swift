@@ -50,7 +50,7 @@ final class TestAnnotation: XCTestCase {
         XCTAssertNil(mockModel.email)
         
     }
-    
+
     func testMax() {
         let word13 = "1234567891123"
         let spectedString = "1234567891"
@@ -60,7 +60,7 @@ final class TestAnnotation: XCTestCase {
         mockModel.wordMax10 = spectedString
         XCTAssert(mockModel.wordMax10 == spectedString)
     }
-    
+
     func testMin() {
         let spectedString = "1234567891123"
         let word9  = "123456789"
