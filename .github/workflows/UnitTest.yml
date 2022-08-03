@@ -1,8 +1,6 @@
 name: Test
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -23,4 +21,3 @@ jobs:
       with:
         github-token: ${{ github.token }}
         lcov-file: ./coverage/lcov.info
-        delete-old-comments: true
