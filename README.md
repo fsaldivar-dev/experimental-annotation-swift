@@ -8,6 +8,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/fsaldivar-dev/experimental-annotation-swift?style=for-the-badge)](https://github.com/fsaldivar-dev/experimental-annotation-swift/stargazers)
 ![GitHub license:	GitHub license badge](https://img.shields.io/github/license/fsaldivar-dev/experimental-annotation-swift)
 ![Cocoapods](https://img.shields.io/cocoapods/v/AnnotationSwift)
+[![Swift](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/swift.yml/badge.svg)](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/swift.yml)
 
 Librería que se usa para anidar anotaciones
 
