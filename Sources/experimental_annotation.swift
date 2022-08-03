@@ -7,13 +7,13 @@
 
 public protocol ASAnnotationWrapped: ASAnnotation  {
 
-    associatedtype E
-    var wrappedValue: E? { set get }
+    associatedtype Element
+    var wrappedValue: Element? { set get }
 }
 
 extension ASAnnotationWrapped {
 
-    private mutating func setValue(value: E) {
+    private mutating func setValue(value: Element) {
         wrappedValue = value
     }
 
@@ -22,7 +22,7 @@ extension ASAnnotationWrapped {
     }
 
     public mutating func updateValue<T>(value: T) {
-        guard let value = value as? E else {
+        guard let value = value as? Element else {
             return
         }
         wrappedValue = value
@@ -101,11 +101,11 @@ public struct ASGroup<SetValue>: ASAnnotationGroup {
     public var annotations: [ASAnnotation]
 
     public var wrappedValue: SetValue? {
-        get { service}
         set {
             var updateValue = newValue
             service = updateWrapped(value: &updateValue)
         }
+        get { service }
     }
 
     /// ``@propertyWrapper`` `ASGroup` solo se podra construir con una lista de ``ASAnnotation``
