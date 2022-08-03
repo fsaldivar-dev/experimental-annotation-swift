@@ -21,8 +21,5 @@ jobs:
         output-file: ./coverage/lcov.info
     - uses: romeovs/lcov-reporter-action@v0.2.16
       with:
-        github-token:
-            description: Github token
-            required: true
-            default: ${{ github.token }}
+        github-token: ${{ github.token }}
         lcov-file: ./coverage/lcov.info
