@@ -8,8 +8,10 @@
 import Foundation
 @propertyWrapper
 public struct MaxLength<Value: StringProtocol>: ASAnnotationWrapped {
+
     private var value: Value?
     private var maxLength: Int
+    
     public var wrappedValue: Value? {
         get { return self.value }
         set { self.value = self.tranformValue(wrappedValue: newValue) }
