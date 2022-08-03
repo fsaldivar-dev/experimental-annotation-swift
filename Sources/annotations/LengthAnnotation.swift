@@ -42,8 +42,8 @@ public struct MinLength<Value: StringProtocol>: ASAnnotationWrapped {
     private var minLength: Int
 
     public var wrappedValue: Value? {
-        set { self.value = self.tranformValue(wrappedValue: newValue) }
         get { return self.value }
+        set { self.value = self.tranformValue(wrappedValue: newValue) }
     }
 
     public init(wrappedValue: Value? = nil, minLength: Int) {
