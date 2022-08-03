@@ -1,26 +1,28 @@
-name: Lint
+name: SwiftLint
+
 on:
-  push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+    paths:
+      - '.github/workflows/swiftlint.yml'
+      - '.swiftlint.yml'
+      - '**/*.swift'
 
 jobs:
-  run-lint:
-    
+  SwiftLint:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Fetch base ref
-        if: ${{ always() }}
-        run: |
-          git fetch --prune --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/heads/${{ github.base_ref }}
-      - name: SwiftLint (Only files changed in the PR)
-        if: ${{ always() }}
-        uses: henry2423/action-swiftlint@Fix-PR-Lint
+      - uses: actions/checkout@v1
+      - name: GitHub Action for SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
+      - name: GitHub Action for SwiftLint with --strict
+        uses: norio-nomura/action-swiftlint@3.2.1
         with:
-          args: --force-exclude --config .swiftlint.yml
+          args: --strict
+      - name: GitHub Action for SwiftLint (Only files changed in the PR)
+        uses: norio-nomura/action-swiftlint@3.2.1
         env:
-           DIFF_BASE: ${{ github.base_ref }}
-           DIFF_HEAD: HEAD
+          DIFF_BASE: ${{ github.base_ref }}
+      - name: GitHub Action for SwiftLint (Different working directory)
+        uses: norio-nomura/action-swiftlint@3.2.1
+        env:
+          WORKING_DIRECTORY: Source
