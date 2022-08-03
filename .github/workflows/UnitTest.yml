@@ -19,3 +19,6 @@ jobs:
       uses: maxep/spm-lcov-action@0.3.0
       with:
         output-file: ./coverage/lcov.info
+    - uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        lcov-file: ./coverage/lcov.info
