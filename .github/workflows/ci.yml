@@ -11,15 +11,12 @@ jobs:
   tests:
     runs-on: macos-latest
     steps:
-    - name: Swift Coverage Report
-      uses: maxep/spm-lcov-action@0.3.1
-      
-      
-    - name: Run tests
-      run: swift test --enable-code-coverage
-
-    - name: Test coverage
-      uses: maxep/spm-lcov-action@0.3.0
-      with:
-        output-file: ./coverage/lcov.info
-
+    – uses: actions/checkout@v2
+    – name: Lint
+      run: swiftlint
+    – name: Build for macOS
+      run: swift build -v
+    – name: Run macOS tests
+      run: swift test -v
+    – name: Run iOS tests
+      run: sh ./Scripts/ci-ios-code-coverage.sh
