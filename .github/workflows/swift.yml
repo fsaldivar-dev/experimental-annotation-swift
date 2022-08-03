@@ -17,5 +17,3 @@ jobs:
       run: swift build -v
     - name: Run tests
       run: swift test -v
-    – name: Run iOS tests
-      run: sh ./Scripts/ci-ios-code-coverage.sh
