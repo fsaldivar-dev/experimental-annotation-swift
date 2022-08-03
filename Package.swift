@@ -25,6 +25,6 @@ let package = Package(
         .testTarget(
             name: "esperimental-annotation-swiftTests",
             dependencies: ["AnnotationSwift"],
-            path: "Tests"),
+            path: "Tests")
     ]
 )
