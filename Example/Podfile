@@ -10,6 +10,7 @@ target 'Example' do
   target 'ExampleTests' do
     inherit! :search_paths
     # Pods for testing
+    pod 'AnnotationSwift', :path => '../', :testspecs => ['Tests'] 
   end
 
   target 'ExampleUITests' do
