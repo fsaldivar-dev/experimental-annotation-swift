@@ -70,5 +70,4 @@ final class TestAnnotation: XCTestCase {
         mockModel.wordMin10 = spectedString
         XCTAssert(mockModel.wordMin10 == spectedString)
     }
-
 }
