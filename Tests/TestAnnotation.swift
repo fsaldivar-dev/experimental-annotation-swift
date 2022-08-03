@@ -9,12 +9,10 @@ import XCTest
 @testable import AnnotationSwift
 
 struct MockModel {
-
     @Email
     var email: String?
     @MaxLength(maxLength: 10)
     var wordMax10: String?
-    
     @MinLength(minLength: 10)
     var wordMin10: String?
 }
@@ -25,7 +23,6 @@ final class TestAnnotation: XCTestCase {
         var mockModel = MockModel()
         mockModel.email = "fsaldivar.dev@gmail.com"
         XCTAssert(mockModel.email == "fsaldivar.dev@gmail.com")
-        
         mockModel.email = "fsaldivar.dev@hotmail.com"
         XCTAssert(mockModel.email == "fsaldivar.dev@hotmail.com")
         mockModel.email = "fsaldivar.dev@yahoo.com.mx"
@@ -48,9 +45,8 @@ final class TestAnnotation: XCTestCase {
         XCTAssertNil(mockModel.email)
         mockModel.email = "fsaldivar-dev/yahoo.com.mx"
         XCTAssertNil(mockModel.email)
-        
     }
-    
+
     func testMax() {
         let word13 = "1234567891123"
         let spectedString = "1234567891"
@@ -60,7 +56,7 @@ final class TestAnnotation: XCTestCase {
         mockModel.wordMax10 = spectedString
         XCTAssert(mockModel.wordMax10 == spectedString)
     }
-    
+
     func testMin() {
         let spectedString = "1234567891123"
         let word9  = "123456789"
@@ -70,5 +66,4 @@ final class TestAnnotation: XCTestCase {
         mockModel.wordMin10 = spectedString
         XCTAssert(mockModel.wordMin10 == spectedString)
     }
-
 }

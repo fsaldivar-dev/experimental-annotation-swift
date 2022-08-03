@@ -6,9 +6,11 @@
 ![GitHub issues:	GitHub issues badge](https://img.shields.io/github/issues/fsaldivar-dev/experimental-annotation-swift)
 ![GitHub forks:	GitHub forks badge](https://img.shields.io/github/forks/fsaldivar-dev/experimental-annotation-swift)
 [![GitHub stars](https://img.shields.io/github/stars/fsaldivar-dev/experimental-annotation-swift?style=for-the-badge)](https://github.com/fsaldivar-dev/experimental-annotation-swift/stargazers)
+
 ![GitHub license:	GitHub license badge](https://img.shields.io/github/license/fsaldivar-dev/experimental-annotation-swift)
 ![Cocoapods](https://img.shields.io/cocoapods/v/AnnotationSwift)
-[![Swift](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/swift.yml/badge.svg)](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/swift.yml)
+[![Build](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/Build.yml/badge.svg)](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/Build.yml)
+[![Test](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/UnitTest.yml/badge.svg)](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/UnitTest.yml)
 
 Librería que se usa para anidar anotaciones
 
