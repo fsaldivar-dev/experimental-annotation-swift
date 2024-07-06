@@ -61,11 +61,6 @@ jobs:
                 --output-path $DOC_DIR \
                 --hosting-base-path "experimental-annotation-swift"
           
-          
-          if [ -d "$OUTPUT_DIR" ]; then
-          rm -rf $OUTPUT_DIR
-          fi
-          echo "Documentación transformada y lista para hospedaje estático en $DOC_DIR"
 
           # Crear un archivo index.html en la raíz que redirija a la ruta correcta
           cat <<EOF > $OUTPUT_DIR/index.html
@@ -82,7 +77,10 @@ jobs:
           </body>
           </html>
           EOF
-      
+          if [ -d "$OUTPUT_DIR" ]; then
+            rm -rf $OUTPUT_DIR
+          fi
+          echo "Documentación transformada y lista para hospedaje estático en $DOC_DIR"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
