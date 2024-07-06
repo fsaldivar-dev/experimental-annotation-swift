@@ -33,13 +33,12 @@ jobs:
         run: sudo xcode-select -s "/Applications/Xcode_13.3.1.app"
       
       - name: Build DocC
-        run:
+        run: | 
             SCHEME_NAME="AnnotationSwift"
             DESTINATION="generic/platform=iOS"
             BUILD_DIR="./build"
             OUTPUT_DIR="./docs"
             PROJECT_NAME="AnnotationSwift"
-
             # Borrar directorio de build y output si existen
             rm -rf $BUILD_DIR
             rm -rf $OUTPUT_DIR
