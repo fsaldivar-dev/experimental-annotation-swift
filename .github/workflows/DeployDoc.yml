@@ -63,17 +63,28 @@ jobs:
           fi
 
           # Procesar el archivo .doccarchive
-          $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path ./docs --hosting-base-path ''
+          $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path ./docs --hosting-base-path "../../"
 
           if [ -d "$OUTPUT_DIR" ]; then
             rm -rf $OUTPUT_DIR
           fi
 
 
-          # Crear un archivo index.html que redirija a la ruta correcta
-          echo "<script>window.location.href += 'documentation/$PROJECT_NAME'</script>" > $OUTPUT_DIR/index.html
-          echo "Documentación transformada y lista para hospedaje estático en ./git-page"
-
+          # Crear un archivo index.html en la raíz que redirija a la ruta correcta
+          cat <<EOF > $OUTPUT_DIR/index.html
+          <!doctype html>
+          <html lang="en-US">
+          <head>
+              <meta charset="utf-8">
+              <meta http-equiv="X-UA-Compatible" content="IE=edge">
+              <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+              <title>Documentation</title>
+              <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
+          </head>
+          <body>
+          </body>
+          </html>
+          EOF
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
