@@ -69,21 +69,6 @@ jobs:
             # Procesar el archivo .doccarchive
             $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $OUTPUT_DIR --hosting-base-path "../../"
 
-            # Crear un archivo index.html en la raíz que redirija a la ruta correcta
-            cat <<EOF > $OUTPUT_DIR/index.html
-            <!doctype html>
-            <html lang="en-US">
-            <head>
-                <meta charset="utf-8">
-                <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-                <title>Documentation</title>
-                <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
-            </head>
-            <body>
-            </body>
-            </html>
-            EOF
 
             echo "Documentación transformada y lista para hospedaje estático en $OUTPUT_DIR"
 
