@@ -59,7 +59,7 @@ jobs:
           $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $DOC_DIR --hosting-base-path "experimental-annotation-swift"
           
           # Crear un archivo index.html que redirija a la ruta correcta
-          echo "<script>window.location.href += 'documentation/$PROJECT_NAME'</script>" > $OUTPUT_DIR/index.html
+          echo "<script>window.location.href += 'documentation/annotationSwift'</script>" > $OUTPUT_DIR/index.html
           
           if [ -d "$OUTPUT_DIR" ]; then
           rm -rf $OUTPUT_DIR
