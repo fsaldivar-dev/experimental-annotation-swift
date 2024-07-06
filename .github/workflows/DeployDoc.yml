@@ -53,7 +53,7 @@ jobs:
           echo "Archiving documentation..."
           
           $(xcrun --find docc) process-archive \
-            transform-for-static-hosting OUTPUT_DIR/Build/Products/Debug-iphonesimulator/$SCHEME_NAME.doccarchive \
+            transform-for-static-hosting $OUTPUT_DIR/Build/Products/Debug-iphonesimulator/$SCHEME_NAME.doccarchive \
             --output-path docs \
             --hosting-base-path $REPOSITORY;
             
