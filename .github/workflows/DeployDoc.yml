@@ -1,22 +1,23 @@
-name: Deploy DocC to Github Pages
+name: Deploy DocC to GitHub Pages
 on:
   # Manual run
   workflow_dispatch:
   # Runs on pushes targeting the master branch
   push:
     branches: ["master"]
+
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
-  
+
 jobs:
-  # One deployment deploy job since we're just deploying
   deploy:
     environment:
       # Must set to this for deploying to GitHub Pages
@@ -32,59 +33,61 @@ jobs:
       
       - name: Build DocC
         run: |
-          # Variables configurables
+          # Configurable variables
           SCHEME_NAME="AnnotationSwift"
           DESTINATION="generic/platform=iOS"
-          OUTPUT_DIR="./deriveData"
+          OUTPUT_DIR="./derivedData"
           DOC_DIR="./docs"
           PROJECT_NAME="annotationSwift"
-          # Crear el directorio de salida si no existe
+          
+          # Create output directory if it doesn't exist
           mkdir -p $OUTPUT_DIR
-          # Generar la documentación
+          
+          # Generate documentation
           xcodebuild docbuild \
-          -scheme $SCHEME_NAME \
-          -destination $DESTINATION \
-          -derivedDataPath $OUTPUT_DIR \
-          -allowProvisioningUpdates
-          # Mensaje de éxito
-          echo "Documentación generada en $OUTPUT_DIR"
-          # Buscar el archivo .doccarchive generado
+            -scheme $SCHEME_NAME \
+            -destination $DESTINATION \
+            -derivedDataPath $OUTPUT_DIR \
+            -allowProvisioningUpdates
+          
+          # Success message
+          echo "Documentation generated in $OUTPUT_DIR"
+          
+          # Find the generated .doccarchive file
           DOCS_ARCHIVE=$(find $OUTPUT_DIR -name "*.doccarchive" | head -n 1)
-          echo "Archivo doccarchive creado en $DOCS_ARCHIVE"
+          echo "doccarchive file created in $DOCS_ARCHIVE"
           if [ -z "$DOCS_ARCHIVE" ]; then
-          echo "No se encontró ningún archivo .doccarchive."
-          exit 1
+            echo "No .doccarchive file found."
+            exit 1
           fi
           
-          # Procesar el archivo .doccarchive
+          # Process the .doccarchive file
           $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE \
-                --output-path $DOC_DIR \
-                --hosting-base-path "experimental-annotation-swift"
+            --output-path $DOC_DIR \
+            --hosting-base-path "experimental-annotation-swift"
           
-
-          # Crear un archivo index.html en la raíz que redirija a la ruta correcta
-          cat <<EOF > $OUTPUT_DIR/index.html
+          # Create an index.html file in the root to redirect to the correct path
+          cat <<EOF > $DOC_DIR/index.html
           <!doctype html>
           <html lang="en-US">
           <head>
-              <meta charset="utf-8">
-              <meta http-equiv="X-UA-Compatible" content="IE=edge">
-              <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-              <title>Documentation</title>
-              <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+            <title>Documentation</title>
+            <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
           </head>
           <body>
           </body>
           </html>
           EOF
-          if [ -d "$OUTPUT_DIR" ]; then
-            rm -rf $OUTPUT_DIR
-          fi
-          echo "Documentación transformada y lista para hospedaje estático en $DOC_DIR"
+          
+          echo "Documentation transformed and ready for static hosting in $DOC_DIR"
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload only the git-page directory
+          # Upload only the docs directory
           path: 'docs'
       
       - name: Deploy to GitHub Pages
