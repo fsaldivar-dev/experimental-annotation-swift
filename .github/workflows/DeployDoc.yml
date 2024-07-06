@@ -3,8 +3,8 @@ on:
   # Manual run
   workflow_dispatch:
   # Runs on pushes targeting the master branch
-  #push:
-   # branches: ["master"]
+  # push:
+  #   branches: ["master"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -16,7 +16,7 @@ permissions:
 concurrency:
   group: "pages"
   cancel-in-progress: true
-  
+
 jobs:
   # One deployment deploy job since we're just deploying
   deploy:
@@ -28,57 +28,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Force Xcode 13.3.1 
+
+      - name: Force Xcode 13.3.1
         run: sudo xcode-select -s "/Applications/Xcode_13.3.1.app"
-      
+
       - name: Build DocC
-        run: | 
-            SCHEME_NAME="AnnotationSwift"
-            DESTINATION="generic/platform=iOS"
-            BUILD_DIR="./build"
-            OUTPUT_DIR="./docs"
-            PROJECT_NAME="AnnotationSwift"
-            # Borrar directorio de build y output si existen
-            rm -rf $BUILD_DIR
-            rm -rf $OUTPUT_DIR
+        run: |
+          # Variables configurables
+          SCHEME_NAME="AnnotationSwift"
+          OUTPUT_DIR="./docs"
+          PROJECT_NAME="AnnotationSwift"
 
-            # Crear el directorio de build si no existe
-            mkdir -p $BUILD_DIR
+          # Limpiar el directorio de compilación y la caché de módulos
+          rm -rf .build
+          rm -rf ~/Library/Developer/Xcode/DerivedData
 
-            # Generar la documentación
-            xcodebuild docbuild \
-                -scheme $SCHEME_NAME \
-                -destination $DESTINATION \
-                -derivedDataPath $BUILD_DIR \
-                -allowProvisioningUpdates
+          # Generar la documentación
+          swift package --allow-writing-to-directory ${OUTPUT_DIR} \
+              generate-documentation --target ${SCHEME_NAME} \
+              --disable-indexing \
+              --transform-for-static-hosting \
+              --hosting-base-path ${PROJECT_NAME} \
+              --output-path ${OUTPUT_DIR}
 
-            # Mensaje de éxito
-            echo "Documentación generada en $BUILD_DIR"
-
-            # Buscar el archivo .doccarchive generado
-            DOCS_ARCHIVE=$(find $BUILD_DIR -name "*.doccarchive" | head -n 1)
-
-            echo "Archivo doccarchive creado en $DOCS_ARCHIVE"
-
-            if [ -z "$DOCS_ARCHIVE" ]; then
-              echo "No se encontró ningún archivo .doccarchive."
-              exit 1
-            fi
-
-            # Procesar el archivo .doccarchive
-            $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $OUTPUT_DIR --hosting-base-path './'
-
-
-            echo "Documentación transformada y lista para hospedaje estático en $OUTPUT_DIR"
-
+          # Mensaje de éxito
+          echo "Documentación generada en $OUTPUT_DIR"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload only the git-page directory
           path: 'docs/documentation/AnnotationSwift/'
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
