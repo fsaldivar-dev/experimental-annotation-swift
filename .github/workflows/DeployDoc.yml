@@ -37,7 +37,7 @@ jobs:
           DESTINATION="generic/platform=iOS"
           OUTPUT_DIR="./deriveData"
           DOC_DIR="./docs"
-          PROJECT_NAME="annotationSwift"
+          PROJECT_NAME="annotationswift"
           REPOSITORY="experimental-annotation-swift"
           # Crear el directorio de salida si no existe
           mkdir -p $OUTPUT_DIR
