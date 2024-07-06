@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload only the git-page directory
-          path: 'docs/documentation/AnnotationSwift/'
+          path: 'docs'
 
       - name: Deploy to GitHub Pages
         id: deployment
