@@ -33,59 +33,62 @@ jobs:
         run: sudo xcode-select -s "/Applications/Xcode_13.3.1.app"
       
       - name: Build DocC
-        run: |
-          # Variables configurables
-          SCHEME_NAME="AnnotationSwift"
-          DESTINATION="generic/platform=iOS"
-          OUTPUT_DIR="./deriveData"
+        run:
+            SCHEME_NAME="AnnotationSwift"
+            DESTINATION="generic/platform=iOS"
+            BUILD_DIR="./build"
+            OUTPUT_DIR="./docs"
+            PROJECT_NAME="AnnotationSwift"
 
-          # Crear el directorio de salida si no existe
-          mkdir -p $OUTPUT_DIR
-
-          # Generar la documentación
-          xcodebuild docbuild \
-              -scheme $SCHEME_NAME \
-              -destination $DESTINATION \
-              -derivedDataPath $OUTPUT_DIR \
-              -allowProvisioningUpdates
-
-          # Mensaje de éxito
-          echo "Documentación generada en $OUTPUT_DIR"
-
-          # Buscar el archivo .doccarchive generado
-          DOCS_ARCHIVE=$(find $OUTPUT_DIR -name "*.doccarchive" | head -n 1)
-
-          echo "Archivo doccarchive creado en $DOCS_ARCHIVE"
-
-          if [ -z "$DOCS_ARCHIVE" ]; then
-            echo "No se encontró ningún archivo .doccarchive."
-            exit 1
-          fi
-
-          # Procesar el archivo .doccarchive
-          $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path ./docs --hosting-base-path "../../"
-
-          if [ -d "$OUTPUT_DIR" ]; then
+            # Borrar directorio de build y output si existen
+            rm -rf $BUILD_DIR
             rm -rf $OUTPUT_DIR
-          fi
+
+            # Crear el directorio de build si no existe
+            mkdir -p $BUILD_DIR
+
+            # Generar la documentación
+            xcodebuild docbuild \
+                -scheme $SCHEME_NAME \
+                -destination $DESTINATION \
+                -derivedDataPath $BUILD_DIR \
+                -allowProvisioningUpdates
+
+            # Mensaje de éxito
+            echo "Documentación generada en $BUILD_DIR"
+
+            # Buscar el archivo .doccarchive generado
+            DOCS_ARCHIVE=$(find $BUILD_DIR -name "*.doccarchive" | head -n 1)
+
+            echo "Archivo doccarchive creado en $DOCS_ARCHIVE"
+
+            if [ -z "$DOCS_ARCHIVE" ]; then
+              echo "No se encontró ningún archivo .doccarchive."
+              exit 1
+            fi
+
+            # Procesar el archivo .doccarchive
+            $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $OUTPUT_DIR --hosting-base-path "../../"
+
+            # Crear un archivo index.html en la raíz que redirija a la ruta correcta
+            cat <<EOF > $OUTPUT_DIR/index.html
+            <!doctype html>
+            <html lang="en-US">
+            <head>
+                <meta charset="utf-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+                <title>Documentation</title>
+                <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
+            </head>
+            <body>
+            </body>
+            </html>
+            EOF
+
+            echo "Documentación transformada y lista para hospedaje estático en $OUTPUT_DIR"
 
 
-          # Crear un archivo index.html en la raíz que redirija a la ruta correcta
-          cat <<EOF > $OUTPUT_DIR/index.html
-          <!doctype html>
-          <html lang="en-US">
-          <head>
-              <meta charset="utf-8">
-              <meta http-equiv="X-UA-Compatible" content="IE=edge">
-              <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-              <title>Documentation</title>
-              <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
-          </head>
-          <body>
-          </body>
-          </html>
-          EOF
-      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
