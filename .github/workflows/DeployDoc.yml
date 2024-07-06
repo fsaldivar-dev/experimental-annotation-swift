@@ -67,7 +67,7 @@ jobs:
             fi
 
             # Procesar el archivo .doccarchive
-            $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $OUTPUT_DIR --hosting-base-path "docs/documentation/AnnotationSwift/"
+            $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $OUTPUT_DIR --hosting-base-path ''
 
 
             echo "Documentación transformada y lista para hospedaje estático en $OUTPUT_DIR"
