@@ -65,7 +65,7 @@ jobs:
             
           echo "** Archived documentation**"
           
-          #echo "<script>window.location.href += \"documentation/$PROJECT_NAME\"</script>" > docs/index.html;
+          echo "<script>window.location.href += \"documentation/$PROJECT_NAME\"</script>" > docs/index.html;
 
       - name: Setup Pages
         id: pages
