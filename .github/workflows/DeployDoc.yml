@@ -37,6 +37,7 @@ jobs:
           DESTINATION="generic/platform=iOS"
           OUTPUT_DIR="./deriveData"
           DOC_DIR="./docs"
+          PROJECT_NAME="annotationSwift"
           # Crear el directorio de salida si no existe
           mkdir -p $OUTPUT_DIR
           # Generar la documentación
@@ -54,17 +55,33 @@ jobs:
           echo "No se encontró ningún archivo .doccarchive."
           exit 1
           fi
+          
           # Procesar el archivo .doccarchive
+          $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE \
+                --output-path $DOC_DIR \
+                --hosting-base-path "experimental-annotation-swift"
           
-          $(xcrun --find docc) process-archive transform-for-static-hosting $DOCS_ARCHIVE --output-path $DOC_DIR --hosting-base-path "experimental-annotation-swift"
-          
-          # Crear un archivo index.html que redirija a la ruta correcta
-          echo "<script>window.location.href += 'documentation/annotationSwift'</script>" > $OUTPUT_DIR/index.html
           
           if [ -d "$OUTPUT_DIR" ]; then
           rm -rf $OUTPUT_DIR
           fi
           echo "Documentación transformada y lista para hospedaje estático en $DOC_DIR"
+
+          # Crear un archivo index.html en la raíz que redirija a la ruta correcta
+          cat <<EOF > $OUTPUT_DIR/index.html
+          <!doctype html>
+          <html lang="en-US">
+          <head>
+              <meta charset="utf-8">
+              <meta http-equiv="X-UA-Compatible" content="IE=edge">
+              <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+              <title>Documentation</title>
+              <script>window.location.href += 'documentation/$PROJECT_NAME'</script>
+          </head>
+          <body>
+          </body>
+          </html>
+          EOF
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
