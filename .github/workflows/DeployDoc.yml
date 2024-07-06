@@ -49,11 +49,17 @@ jobs:
           -allowProvisioningUpdates
           # Mensaje de éxito
 
-          
+          # Buscar el archivo .doccarchive generado
+          DOCS_ARCHIVE=$(find $OUTPUT_DIR -name "*.doccarchive" | head -n 1)
+          echo "Archivo doccarchive creado en $DOCS_ARCHIVE"
+          if [ -z "$DOCS_ARCHIVE" ]; then
+            echo "No se encontró ningún archivo .doccarchive."
+            exit 1
+          fi
           echo "Archiving documentation..."
           
           $(xcrun --find docc) process-archive \
-            transform-for-static-hosting $OUTPUT_DIR/Build/Products/Debug-iphonesimulator/$SCHEME_NAME.doccarchive \
+            transform-for-static-hosting $DOCS_ARCHIVE \
             --output-path docs \
             --hosting-base-path $REPOSITORY;
             
