@@ -67,6 +67,9 @@ jobs:
           
           echo "<script>window.location.href += \"documents/$PROJECT_NAME\"</script>" > docs/index.html;
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
