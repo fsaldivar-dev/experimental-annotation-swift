@@ -68,7 +68,12 @@ jobs:
           if [ -d "$OUTPUT_DIR" ]; then
             rm -rf $OUTPUT_DIR
           fi
+
+
+          # Crear un archivo index.html que redirija a la ruta correcta
+          echo "<script>window.location.href += 'documentation/$PROJECT_NAME'</script>" > $OUTPUT_DIR/index.html
           echo "Documentación transformada y lista para hospedaje estático en ./git-page"
+
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
