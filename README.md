@@ -79,3 +79,8 @@ struct Model {
 ````
 Se puede observar un modelo donde al attributo `email` se le agregan dos restricciones, la primera es que se requiere ser de tipo *email*, la segunda es que necesita que el string sea minusculas, si yo agrego `FSALDIVAR_DEV@example.com` el valor sera cambiado por `fsaldivar_dev@example.com`
 
+
+
+---
+
+> *El conocimiento se pudre cuando se guarda. Se mantiene vivo cuando se comparte.* — [Manifiesto](./MANIFESTO.md)
