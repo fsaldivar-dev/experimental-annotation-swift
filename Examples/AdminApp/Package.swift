@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 import PackageDescription
 
 // App de administración con roles: guardianes de navegación, sesión deslizante y auditoría,

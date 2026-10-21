@@ -27,7 +27,7 @@ struct Service {
 
 Cinco minutos: instalar, escribir un decorador, apilarlo y verlo correr.
 
-**1. Añade la dependencia** en tu `Package.swift` (Swift 6.0+):
+**1. Añade la dependencia** en tu `Package.swift` (Swift 6.2+):
 
 ```swift
 dependencies: [
@@ -107,7 +107,7 @@ Eso es todo el mecanismo: `Logged` vio el rechazo porque está por fuera de `Aut
 
 ## Instalación
 
-Swift Package Manager, Swift 6.0 o superior:
+Swift Package Manager, Swift 6.2 o superior (Xcode 26.1+):
 
 ```swift
 dependencies: [
@@ -513,7 +513,7 @@ Un decorador de propiedad puede seguir devolviendo `nil` para rechazar un valor 
 
 ## Requisitos
 
-Swift 6.0+. macOS 10.15, iOS 13, tvOS 13, watchOS 6, visionOS 1. La librería depende de [swift-syntax](https://github.com/swiftlang/swift-syntax) para el plugin del compilador.
+Swift 6.2 o superior (Xcode 26.1+); la CI prueba 6.2 y 6.3. Swift 6.1 no compila las implementaciones por defecto de `HookDecorator` y `GuardDecorator` (sendability del resultado genérico en closures `async`). Plataformas: macOS 10.15, iOS 13, tvOS 13, watchOS 6, visionOS 1. La librería depende de [swift-syntax](https://github.com/swiftlang/swift-syntax) para el plugin del compilador.
 
 ## Teoría
 
