@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "AdminAppCore", targets: ["AdminAppCore"]),
     ],
     dependencies: [
-        .package(path: "../.."),
+        .package(name: "AnnotationSwift", path: "../.."),
     ],
     targets: [
         .target(

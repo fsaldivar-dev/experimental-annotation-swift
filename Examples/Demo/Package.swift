@@ -7,7 +7,7 @@ let package = Package(
     name: "Demo",
     platforms: [.macOS(.v13)],
     dependencies: [
-        .package(path: "../.."),
+        .package(name: "AnnotationSwift", path: "../.."),
     ],
     targets: [
         .executableTarget(
