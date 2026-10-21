@@ -1,31 +1,43 @@
-// swift-tools-version:5.3
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
+// swift-tools-version: 6.0
 import PackageDescription
+import CompilerPluginSupport
 
 let package = Package(
     name: "AnnotationSwift",
+    platforms: [
+        .macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13), .visionOS(.v1),
+    ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(
-            name: "AnnotationSwift",
-            targets: ["AnnotationSwift"]),
+        /// Runtime (`Decorator`, `PropertyDecorator`, `Call`, `Property`) y las macros `@Decorable` y marcadores.
+        .library(name: "AnnotationSwift", targets: ["AnnotationSwift"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0"..<"605.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(
-            name: "AnnotationSwift",
-            dependencies: [],
-            path: "Sources"),
+        // Plugin del compilador: un único procesador genérico para todas las anotaciones.
+        .macro(
+            name: "AnnotationMacros",
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftDiagnostics", package: "swift-syntax"),
+            ]
+        ),
+        // Runtime público.
+        .target(name: "AnnotationSwift", dependencies: ["AnnotationMacros"]),
+
+        // Pruebas end-to-end: decoradores reales apilados sobre funciones y propiedades.
+        .testTarget(name: "AnnotationSwiftTests", dependencies: ["AnnotationSwift"]),
+        // Pruebas de expansión y diagnósticos de las macros.
         .testTarget(
-            name: "esperimental-annotation-swiftTests",
-            dependencies: ["AnnotationSwift"],
-            path: "Tests")
-    ]
+            name: "AnnotationMacrosTests",
+            dependencies: [
+                "AnnotationMacros",
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
+        ),
+    ],
+    swiftLanguageModes: [.v6]
 )

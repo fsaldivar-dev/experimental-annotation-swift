@@ -169,3 +169,9 @@ Carthage/Build
 # https://docs.fastlane.tools/best-practices/source-control/#source-control 
 
 
+
+# SwiftPM (librería: no se fija el grafo de dependencias)
+Package.resolved
+
+# Xcode workspace data generada al abrir un paquete
+.swiftpm/
