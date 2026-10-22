@@ -5,7 +5,7 @@ struct LoginView: View {
     let reason: LoginReason?
 
     @State private var user = "viewer"
-    @State private var password = "viewer"
+    @State private var password = ""
     @State private var error: String?
 
     var body: some View {
