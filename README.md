@@ -1,6 +1,6 @@
 # experimental-annotation-swift
 
-<img width="480" alt="AnnotationSwift" src="https://user-images.githubusercontent.com/16517868/182271709-188b8cfb-1ac7-4e8e-b062-b3ee121bd92f.png">
+<img alt="AnnotationSwift: decoradores apilables con macros" src="Assets/cover.jpg" width="100%">
 
 [![CI](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/ci.yml/badge.svg)](https://github.com/fsaldivar-dev/experimental-annotation-swift/actions/workflows/ci.yml)
 ![GitHub license](https://img.shields.io/github/license/fsaldivar-dev/experimental-annotation-swift)
