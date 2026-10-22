@@ -28,13 +28,13 @@ public struct DecoratedPropertyMacro: AccessorMacro, PeerMacro {
     ) throws -> [AccessorDeclSyntax] {
         guard let variable = declaration.as(VariableDeclSyntax.self),
               let property = StoredProperty.validate(variable, in: context) else { return [] }
-        let markers = Markers.markers(in: variable.attributes)
-        guard !markers.isEmpty else { return [] }
+        let decorators = Markers.decorators(in: variable.attributes).map(\.expression)
+        guard !decorators.isEmpty else { return [] }
 
         let storage = "_\(property.name)"
         let metadata = propertyExpression(for: variable, named: property.name, in: context)
-        let initChain = chain(markers, value: "initialValue")
-        let setChain = chain(markers, value: "newValue")
+        let initChain = chain(decorators, value: "initialValue")
+        let setChain = chain(decorators, value: "newValue")
 
         return [
             """
@@ -71,7 +71,7 @@ public struct DecoratedPropertyMacro: AccessorMacro, PeerMacro {
               variable.bindingSpecifier.tokenKind == .keyword(.var),
               binding.accessorBlock == nil,
               let name = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text,
-              !Markers.markers(in: variable.attributes).isEmpty
+              !Markers.decorators(in: variable.attributes).isEmpty
         else { return [] }   // los diagnósticos ya los emitió el rol de accesores
 
         var storage = "private var _\(name)"
@@ -83,12 +83,12 @@ public struct DecoratedPropertyMacro: AccessorMacro, PeerMacro {
     // MARK: - Helpers
 
     /// `A().decorate(value, p) { __v in B().decorate(__v, p) { __v in __v } }`
-    private static func chain(_ markers: [AttributeSyntax], value: String) -> String {
+    private static func chain(_ decorators: [String], value: String) -> String {
         var inner = "{ __v in __v }"
-        for marker in markers.reversed() {
-            let argument = marker == markers.first ? value : "__v"
-            let call = "\(Markers.constructor(for: marker)).decorate(\(argument), __annotation_property) \(inner)"
-            inner = marker == markers.first ? call : "{ __v in \(call) }"
+        for (index, decorator) in decorators.enumerated().reversed() {
+            let argument = index == 0 ? value : "__v"
+            let call = "\(decorator).decorate(\(argument), __annotation_property) \(inner)"
+            inner = index == 0 ? call : "{ __v in \(call) }"
         }
         return inner
     }

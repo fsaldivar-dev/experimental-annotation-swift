@@ -7,7 +7,8 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-/// Envuelve el cuerpo de una función con la cadena de decoradores que marcan la declaración.
+/// Envuelve el cuerpo de una función con la cadena de decoradores que marcan la declaración,
+/// ya vengan como marcadores (`@Logged @Retry(3)`) o como `@Decorate(Logged(), Retry(3))`.
 ///
 /// Para `@Logged @Retry(3) func fetch() async throws -> Int { … }` genera:
 ///
@@ -34,8 +35,8 @@ public struct DecoratedFunctionMacro: BodyMacro {
             return []
         }
         let original = Array(body.statements)
-        let markers = Markers.markers(in: function.attributes)
-        guard !markers.isEmpty else { return original }
+        let decorators = Markers.decorators(in: function.attributes)
+        guard !decorators.isEmpty else { return original }
 
         let effects = function.signature.effectSpecifiers
         if let typed = effects?.throwsClause?.type {
@@ -53,9 +54,9 @@ public struct DecoratedFunctionMacro: BodyMacro {
 
         // Cadena de adentro hacia afuera: el último marcador envuelve directamente al cuerpo.
         var chain: String = original.map { $0.trimmedDescription }.joined(separator: "\n")
-        for marker in markers.reversed() {
+        for decorator in decorators.reversed() {
             chain = """
-            return \(prefix)\(Markers.constructor(for: marker)).decorate(__annotation_call\(isolation)) { \(closureSignature)
+            return \(prefix)\(decorator.expression).decorate(__annotation_call\(isolation)) { \(closureSignature)
             \(chain)
             }
             """

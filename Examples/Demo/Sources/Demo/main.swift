@@ -24,6 +24,14 @@ struct Service {
 
     @Logged
     func greet(_ name: String) -> String { "hola, \(name)" }
+
+    /// Misma cadena que `fetch`, sin usar marcadores: los decoradores van como valores.
+    /// Útil cuando no quieres declarar `@attached(peer) macro …` por cada decorador.
+    @Decorate(Logged(), Measured())
+    func ping() async throws -> String {
+        try await Task.sleep(for: .milliseconds(10))
+        return "pong"
+    }
 }
 
 @Decorable
@@ -38,6 +46,8 @@ func run() async throws {
     print(service.greet("Paco"))
     print()
     print(try await service.fetch(id: 7))
+    print()
+    print(try await service.ping())
     print()
     var user = User(email: "  PACO@Mail.com  ")
     print("email normalizado: '\(user.email)'")

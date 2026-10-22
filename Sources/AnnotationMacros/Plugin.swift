@@ -14,6 +14,8 @@ struct AnnotationPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         DecorableMacro.self,
         MarkerMacro.self,
+        DecorateMacro.self,
+        AnnotationMacro.self,
         DecoratedFunctionMacro.self,
         DecoratedPropertyMacro.self,
     ]

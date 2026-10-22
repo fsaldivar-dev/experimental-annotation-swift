@@ -13,6 +13,10 @@ import SwiftSyntaxMacros
 /// No genera código: deja el atributo en la declaración para que `@Decorable` lo lea.
 /// Su único trabajo es avisar cuando el marcador no tendrá efecto porque el tipo
 /// contenedor no es `@Decorable`.
+///
+/// Dentro de un `protocol` el marcador es inerte y no produce error: los requisitos no tienen
+/// cuerpo que envolver, pero otra macro (por ejemplo una que genere la implementación del
+/// protocolo) puede leer los marcadores y transcribirlos al tipo generado.
 public struct MarkerMacro: PeerMacro {
 
     public static func expansion(
@@ -20,16 +24,25 @@ public struct MarkerMacro: PeerMacro {
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
+        Self.checkContext(of: node, in: context)
+        return []
+    }
+
+    /// Un marcador (o `@Decorate`) solo tiene efecto dentro de un tipo `@Decorable`.
+    /// Dentro de un `protocol` es inerte: otra macro puede transcribirlo.
+    static func checkContext(of node: AttributeSyntax, in context: some MacroExpansionContext) {
         let name = Markers.simpleName(of: node) ?? node.attributeName.trimmedDescription
         guard let group = Enclosing.group(in: context) else {
             context.error(node, id: "topLevel",
                           "'@\(name)' has no effect here: decorators can only be applied to members of a @Decorable type")
-            return []
+            return
+        }
+        if group.is(ProtocolDeclSyntax.self) {
+            return   // inerte: otra macro puede transcribirlo
         }
         if !Markers.has("Decorable", in: group.attributes) {
             context.error(node, id: "notDecorable",
                           "'@\(name)' has no effect: add @Decorable to '\(Enclosing.name(of: group))'")
         }
-        return []
     }
 }

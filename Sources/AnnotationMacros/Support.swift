@@ -43,7 +43,7 @@ enum Markers {
         "State", "Binding", "ObservedObject", "StateObject", "Environment", "EnvironmentObject",
         "AppStorage", "SceneStorage", "FocusState", "Published",
         // Esta librería
-        "Decorable", "_DecoratedFunction", "_DecoratedProperty",
+        "Decorable", "Decorate", "Annotation", "_DecoratedFunction", "_DecoratedProperty",
     ]
 
     /// Nombre simple del atributo: para `@AnnotationSwift.Decorable` devuelve `Decorable`.
@@ -65,6 +65,53 @@ enum Markers {
 
     static func markers(in attributes: AttributeListSyntax) -> [AttributeSyntax] {
         attributes.compactMap { $0.as(AttributeSyntax.self) }.filter(isMarker)
+    }
+
+    /// Un decorador a aplicar: la expresión que lo construye y el nodo de donde salió.
+    struct Reference {
+        let expression: String
+        let node: Syntax
+    }
+
+    /// Decoradores de una declaración, en orden de escritura, uniendo las dos formas:
+    /// marcadores (`@Retry(3)` → `Retry(3)`) y `@Decorate(Logged(), Retry(3))` (sus argumentos tal cual).
+    static func decorators(in attributes: AttributeListSyntax) -> [Reference] {
+        var references: [Reference] = []
+        for element in attributes {
+            guard let attribute = element.as(AttributeSyntax.self) else { continue }
+            if simpleName(of: attribute) == "Decorate" {
+                if case .argumentList(let arguments)? = attribute.arguments {
+                    for argument in arguments {
+                        references.append(Reference(expression: argument.expression.trimmedDescription, node: Syntax(argument.expression)))
+                    }
+                }
+            } else if isMarker(attribute) {
+                references.append(Reference(expression: constructor(for: attribute), node: Syntax(attribute)))
+            }
+        }
+        return references
+    }
+
+    /// `@Decorate` sin argumentos, para diagnosticarlo.
+    static func emptyDecorate(in attributes: AttributeListSyntax) -> AttributeSyntax? {
+        attributes.lazy.compactMap { $0.as(AttributeSyntax.self) }.first { attribute in
+            guard simpleName(of: attribute) == "Decorate" else { return false }
+            if case .argumentList(let arguments)? = attribute.arguments { return arguments.isEmpty }
+            return true
+        }
+    }
+
+    /// ¿Hay algo que decorar? (marcadores o un `@Decorate`).
+    static func hasDecorators(in attributes: AttributeListSyntax) -> Bool {
+        attributes.contains { element in
+            guard let attribute = element.as(AttributeSyntax.self) else { return false }
+            return simpleName(of: attribute) == "Decorate" || isMarker(attribute)
+        }
+    }
+
+    /// Primer atributo decorador, para anclar diagnósticos.
+    static func firstDecoratorAttribute(in attributes: AttributeListSyntax) -> AttributeSyntax? {
+        attributes.lazy.compactMap { $0.as(AttributeSyntax.self) }.first { simpleName(of: $0) == "Decorate" || isMarker($0) }
     }
 
     static func has(_ name: String, in attributes: AttributeListSyntax) -> Bool {

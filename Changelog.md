@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-10-21
+### Added
+- `@Annotation` sobre el tipo de un decorador y un generador de declaraciones `@attached(peer) macro …`
+  (firma de los `init`, genéricos, `public`) con dos modos: el command plugin `annotation-registry`
+  (recomendado: escribe `AnnotationRegistry.generated.swift` para commitear, `--check` en CI, cero costo
+  en build) y el build-tool plugin `AnnotationRegistry` (genera en cada build sin commitear nada).
+  Con cualquiera de los dos, `@Logged` se escribe directo.
+- `@Decorate(Logged(), Retry(3))`: aplica decoradores como valores sin declarar un marcador por
+  decorador. Se mezcla con los marcadores clásicos en orden de escritura. Vale para funciones y
+  propiedades.
+- Diagnóstico claro cuando `@Decorable` se aplica a un `protocol`.
+### Changed
+- Un marcador dentro de un `protocol` ya no es error: es inerte, para que otra macro pueda
+  transcribirlo a la implementación que genere (base de JadeAPI).
+
 ## [1.0.1] - 2026-10-21
 ### Changed
 - Mínimo Swift 6.2 (`swift-tools-version: 6.2`): Swift 6.1 no compila las implementaciones por

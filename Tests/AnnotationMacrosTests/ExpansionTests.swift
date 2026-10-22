@@ -11,6 +11,7 @@ import XCTest
 /// Procesador + marcadores, como los ve un módulo cliente.
 let publicMacros: [String: Macro.Type] = [
     "Decorable": DecorableMacro.self,
+    "Decorate": DecorateMacro.self,
     "Logged": MarkerMacro.self,
     "Retry": MarkerMacro.self,
     "Trimmed": MarkerMacro.self,
@@ -118,6 +119,59 @@ final class ExpansionTests: XCTestCase {
         )
     }
 
+    func testDecorateFormMixedWithMarkers() {
+        assertMacroExpansion(
+            """
+            struct Service {
+                @_DecoratedFunction
+                @Decorate(Logged(), Retry(3))
+                @Authorized("admin")
+                func ping() throws {
+                    print("pong")
+                }
+            }
+            """,
+            expandedSource: """
+            struct Service {
+                @Decorate(Logged(), Retry(3))
+                @Authorized("admin")
+                func ping() throws {
+                    let __annotation_call = AnnotationSwift.Call(function: "ping()", type: "Service", file: "TestModule/test.swift", line: 2)
+                    return try Logged().decorate(__annotation_call) { () throws -> Void in
+                        return try Retry(3).decorate(__annotation_call) { () throws -> Void in
+                            return try Authorized("admin").decorate(__annotation_call) { () throws -> Void in
+                                print("pong")
+                            }
+                        }
+                    }
+                }
+            }
+            """,
+            macros: internalMacros
+        )
+    }
+
+    func testDecorateEmptyIsRejected() {
+        assertMacroExpansion(
+            """
+            @Decorable
+            struct Service {
+                @Decorate()
+                func ping() {}
+            }
+            """,
+            expandedSource: """
+            struct Service {
+                func ping() {}
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "@Decorate needs at least one decorator, e.g. @Decorate(Logged(), Retry(3))", line: 3, column: 5),
+            ],
+            macros: publicMacros
+        )
+    }
+
     // MARK: Propiedades
 
     func testProperty() {
@@ -197,6 +251,46 @@ final class ExpansionTests: XCTestCase {
             """,
             diagnostics: [
                 DiagnosticSpec(message: "'@Logged' has no effect here: decorators can only be applied to members of a @Decorable type", line: 1, column: 1),
+            ],
+            macros: publicMacros
+        )
+    }
+
+    func testMarkerInsideProtocolIsInert() {
+        assertMacroExpansion(
+            """
+            protocol LoginRepository {
+                @Logged
+                @Retry(2)
+                func getLogin() async throws -> String
+            }
+            """,
+            expandedSource: """
+            protocol LoginRepository {
+                func getLogin() async throws -> String
+            }
+            """,
+            diagnostics: [],
+            macros: publicMacros
+        )
+    }
+
+    func testDecorableOnProtocolIsRejected() {
+        assertMacroExpansion(
+            """
+            @Decorable
+            protocol LoginRepository {
+                @Logged
+                func getLogin() async throws -> String
+            }
+            """,
+            expandedSource: """
+            protocol LoginRepository {
+                func getLogin() async throws -> String
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "@Decorable cannot be applied to a protocol: requirements have no body to wrap; apply it to the conforming type", line: 3, column: 5),
             ],
             macros: publicMacros
         )

@@ -31,7 +31,7 @@ Cinco minutos: instalar, escribir un decorador, apilarlo y verlo correr.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fsaldivar-dev/experimental-annotation-swift", from: "1.0.0")
+    .package(url: "https://github.com/fsaldivar-dev/experimental-annotation-swift", from: "1.1.0")
 ],
 targets: [
     .executableTarget(
@@ -41,20 +41,27 @@ targets: [
 ]
 ```
 
-**2. Escribe tu primer decorador.** Un tipo con el comportamiento y una línea que lo registra como anotación. `HookDecorator` te da los ganchos "antes / después / falló":
+**2. Escribe tu primer decorador.** Un tipo con el comportamiento, marcado con `@Annotation`. `HookDecorator` te da los ganchos "antes / después / falló":
 
 ```swift
 // Logged.swift
 import AnnotationSwift
 
+@Annotation
 struct Logged: HookDecorator {
     func willCall(_ call: Call) { print("→ \(call)") }
     func didReturn(_ call: Call, result: Any) { print("← \(call) = \(result)") }
     func didThrow(_ call: Call, error: any Error) { print("✗ \(call): \(error)") }
 }
-
-@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
+
+`@Annotation` marca el tipo para el generador. Después del paso 3, genera las declaraciones una vez y commitea el archivo:
+
+```bash
+swift package --allow-writing-to-package-directory annotation-registry
+```
+
+Sin generador, escríbela tú: `@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")`.
 
 **3. Escribe el segundo**, uno que controle si el cuerpo se ejecuta. Un guardián solo necesita `check`:
 
@@ -64,6 +71,7 @@ import AnnotationSwift
 
 enum AccessError: Error { case forbidden }
 
+@Annotation
 struct Authorized: GuardDecorator {
     nonisolated(unsafe) static var currentRole = "viewer"
     let role: String
@@ -73,8 +81,6 @@ struct Authorized: GuardDecorator {
         guard Self.currentRole == role else { throw AccessError.forbidden }
     }
 }
-
-@attached(peer) macro Authorized(_ role: String) = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
 
 **4. Apílalos.** `@Decorable` en el tipo activa los marcadores; el orden de arriba abajo es el orden de envoltura:
@@ -136,6 +142,67 @@ struct Logged: HookDecorator {
 
 @attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
+
+### Registro automático: `@Annotation` + generador
+
+La línea `@attached(peer) macro …` existe porque el compilador exige que `@Logged` sea una macro declarada, y una macro no puede declarar otra. Marca el tipo con `@Annotation` y deja que el generador escriba esa línea por ti, con la firma de sus `init`:
+
+```swift
+@Annotation
+struct Retry: Decorator {
+    init(_ attempts: Int) { … }
+    …
+}
+
+@Decorable
+struct Service {
+    @Logged
+    @Retry(3)                 // sin ninguna declaración escrita a mano
+    func fetch() async throws -> Data { … }
+}
+```
+
+Hay dos modos; el generador es el mismo.
+
+**Recomendado: archivo commiteado, cero costo en build.** Un command plugin escribe `AnnotationRegistry.generated.swift` dentro de cada target con tipos `@Annotation`, y lo commiteas como cualquier fuente. Solo corre cuando tú lo pides; en la CI, `--check` falla si alguien añadió un `@Annotation` sin regenerar.
+
+```bash
+swift package --allow-writing-to-package-directory annotation-registry             # escribe o actualiza
+swift package --allow-writing-to-package-directory annotation-registry --check     # CI: no escribe, pero SwiftPM pide el permiso igual
+swift package --allow-writing-to-package-directory annotation-registry --target App
+```
+
+En Xcode: clic derecho sobre el paquete → "annotation-registry". El archivo generado es una línea por decorador, así que compilarlo no cuesta nada; lo que se evita es ejecutar un generador en cada build.
+
+**Alternativa: build-tool plugin, sin commitear nada.** Genera el archivo en el directorio de build antes de compilar. Cómodo para prototipos; en proyectos grandes añade un proceso por build y obliga a compilar la herramienta en cada máquina y en la CI.
+
+```swift
+.target(
+    name: "App",
+    dependencies: [.product(name: "AnnotationSwift", package: "experimental-annotation-swift")],
+    plugins: [.plugin(name: "AnnotationRegistry", package: "experimental-annotation-swift")]
+)
+```
+
+Si un target tiene el archivo commiteado, el build-tool plugin no genera nada: no hay duplicados. En ambos modos se respetan genéricos, varios `init` (una macro por cada uno) y `public`; sin `init` explícito se usa el memberwise. Decoradores en un módulo compartido: márcalos `public` y el resto de módulos los importa.
+
+### Sin plugin: `@Decorate(…)`
+
+Si no quieres el plugin, pasa los decoradores como valores:
+
+```swift
+@Decorable
+struct Service {
+    @Decorate(Logged(), Retry(3))
+    func fetch() async throws -> Data { … }
+
+    @Decorate(Trimmed())
+    @Lowercased                      // se mezcla con marcadores: Trimmed → Lowercased
+    var email: String
+}
+```
+
+Misma cadena, mismo orden (el primero es el más externo), cero declaraciones y cero plugins. A cambio se pierde la sintaxis apilada `@Logged @Retry(3)`. Las tres formas (declaración manual, `@Annotation` + plugin, `@Decorate`) conviven y se mezclan en orden de escritura.
 
 ### De función: controlar la continuación
 
