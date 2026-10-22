@@ -9,7 +9,7 @@
 import AnnotationSwift
 import Foundation
 
-// MARK: - Registro
+// MARK: - Registro (solo para la forma apilada `@Logged @Retry(3)`; `@Decorate(Logged())` no lo necesita)
 
 @attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 @attached(peer) macro Retry(_ attempts: Int) = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
