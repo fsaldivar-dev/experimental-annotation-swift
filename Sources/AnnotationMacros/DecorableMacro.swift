@@ -17,6 +17,15 @@ public struct DecorableMacro: MemberAttributeMacro {
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
 
+        if declaration.is(ProtocolDeclSyntax.self) {
+            if let attributed = member.asProtocol(WithAttributesSyntax.self),
+               let first = Markers.markers(in: attributed.attributes).first {
+                context.error(first, id: "protocol",
+                              "@Decorable cannot be applied to a protocol: requirements have no body to wrap; apply it to the conforming type")
+            }
+            return []
+        }
+
         if let function = member.as(FunctionDeclSyntax.self) {
             guard !Markers.markers(in: function.attributes).isEmpty else { return [] }
             return ["@AnnotationSwift._DecoratedFunction"]

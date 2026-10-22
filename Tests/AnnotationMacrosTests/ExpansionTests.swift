@@ -202,6 +202,46 @@ final class ExpansionTests: XCTestCase {
         )
     }
 
+    func testMarkerInsideProtocolIsInert() {
+        assertMacroExpansion(
+            """
+            protocol LoginRepository {
+                @Logged
+                @Retry(2)
+                func getLogin() async throws -> String
+            }
+            """,
+            expandedSource: """
+            protocol LoginRepository {
+                func getLogin() async throws -> String
+            }
+            """,
+            diagnostics: [],
+            macros: publicMacros
+        )
+    }
+
+    func testDecorableOnProtocolIsRejected() {
+        assertMacroExpansion(
+            """
+            @Decorable
+            protocol LoginRepository {
+                @Logged
+                func getLogin() async throws -> String
+            }
+            """,
+            expandedSource: """
+            protocol LoginRepository {
+                func getLogin() async throws -> String
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "@Decorable cannot be applied to a protocol: requirements have no body to wrap; apply it to the conforming type", line: 3, column: 5),
+            ],
+            macros: publicMacros
+        )
+    }
+
     func testUnsupportedMembers() {
         assertMacroExpansion(
             """

@@ -31,6 +31,8 @@
 /// - Cualquier atributo con mayúscula inicial que no sea del compilador (`@MainActor`,
 ///   `@IBAction`, …) se considera un marcador; el tipo con ese nombre debe conformar
 ///   ``Decorator`` o ``PropertyDecorator``.
+/// - `@Decorable` no se aplica a un `protocol`. Los marcadores dentro de un protocolo son
+///   inertes: otra macro puede leerlos y transcribirlos a la implementación que genere.
 @attached(memberAttribute)
 public macro Decorable() = #externalMacro(module: "AnnotationMacros", type: "DecorableMacro")
 

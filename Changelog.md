@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-10-21
+### Changed
+- Un marcador dentro de un `protocol` ya no es error: es inerte, para que otra macro pueda
+  transcribirlo a la implementación que genere (base de JadeAPI).
+### Added
+- Diagnóstico claro cuando `@Decorable` se aplica a un `protocol`.
+
 ## [1.0.1] - 2026-10-21
 ### Changed
 - Mínimo Swift 6.2 (`swift-tools-version: 6.2`): Swift 6.1 no compila las implementaciones por
