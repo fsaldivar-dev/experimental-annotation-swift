@@ -58,6 +58,33 @@ public macro Decorable() = #externalMacro(module: "AnnotationMacros", type: "Dec
 @attached(peer)
 public macro Decorate(_ decorators: Any...) = #externalMacro(module: "AnnotationMacros", type: "DecorateMacro")
 
+/// Marca el tipo de un decorador para que su anotación se registre sola.
+///
+/// Una macro no puede declarar otra macro, así que `@Logged` necesita la declaración
+/// `@attached(peer) macro Logged() = …` en alguna parte. Con el build-tool plugin
+/// `AnnotationRegistry` activado en tu target, esa declaración se genera antes de compilar
+/// para cada tipo marcado con `@Annotation`, con la firma de sus `init`:
+///
+/// ```swift
+/// @Annotation
+/// struct Retry: Decorator {
+///     init(_ attempts: Int) { … }
+///     …
+/// }
+///
+/// @Decorable
+/// struct Service {
+///     @Retry(3)                       // sin ninguna declaración escrita a mano
+///     func fetch() async throws -> Data { … }
+/// }
+/// ```
+///
+/// Activación, en `Package.swift`:
+/// `.target(name: "App", dependencies: [...], plugins: [.plugin(name: "AnnotationRegistry", package: "experimental-annotation-swift")])`.
+/// Sin el plugin, `@Annotation` no hace nada y la declaración sigue siendo manual.
+@attached(peer)
+public macro Annotation() = #externalMacro(module: "AnnotationMacros", type: "AnnotationMacro")
+
 /// Macro interna que ``Decorable()`` adjunta a cada función con marcadores. No la uses directamente.
 @attached(body)
 public macro _DecoratedFunction() = #externalMacro(module: "AnnotationMacros", type: "DecoratedFunctionMacro")

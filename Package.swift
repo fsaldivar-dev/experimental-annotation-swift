@@ -10,6 +10,9 @@ let package = Package(
     products: [
         /// Runtime (`Decorator`, `PropertyDecorator`, `Call`, `Property`) y las macros `@Decorable` y marcadores.
         .library(name: "AnnotationSwift", targets: ["AnnotationSwift"]),
+        /// Build-tool plugin: genera las declaraciones de marcador de los tipos `@Annotation`
+        /// para poder escribir `@Logged` sin registrar nada a mano.
+        .plugin(name: "AnnotationRegistry", targets: ["AnnotationRegistry"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0"..<"605.0.0"),
@@ -28,8 +31,25 @@ let package = Package(
         // Runtime público.
         .target(name: "AnnotationSwift", dependencies: ["AnnotationMacros"]),
 
+        // Registro automático de anotaciones: generador, herramienta y plugin.
+        .target(
+            name: "AnnotationRegistryCore",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
+            ]
+        ),
+        .executableTarget(name: "annotation-registry", dependencies: ["AnnotationRegistryCore"]),
+        .plugin(
+            name: "AnnotationRegistry",
+            capability: .buildTool(),
+            dependencies: ["annotation-registry"]
+        ),
+
         // Pruebas end-to-end: decoradores reales apilados sobre funciones y propiedades.
         .testTarget(name: "AnnotationSwiftTests", dependencies: ["AnnotationSwift"]),
+        // Pruebas del generador de declaraciones.
+        .testTarget(name: "AnnotationRegistryTests", dependencies: ["AnnotationRegistryCore"]),
         // Pruebas de expansión y diagnósticos de las macros.
         .testTarget(
             name: "AnnotationMacrosTests",

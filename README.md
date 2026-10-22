@@ -27,34 +27,36 @@ struct Service {
 
 Cinco minutos: instalar, escribir un decorador, apilarlo y verlo correr.
 
-**1. Añade la dependencia** en tu `Package.swift` (Swift 6.2+):
+**1. Añade la dependencia y el plugin** en tu `Package.swift` (Swift 6.2+):
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fsaldivar-dev/experimental-annotation-swift", from: "1.0.0")
+    .package(url: "https://github.com/fsaldivar-dev/experimental-annotation-swift", from: "1.1.0")
 ],
 targets: [
     .executableTarget(
         name: "MiApp",
-        dependencies: [.product(name: "AnnotationSwift", package: "experimental-annotation-swift")]
+        dependencies: [.product(name: "AnnotationSwift", package: "experimental-annotation-swift")],
+        plugins: [.plugin(name: "AnnotationRegistry", package: "experimental-annotation-swift")]
     )
 ]
 ```
 
-**2. Escribe tu primer decorador.** Un tipo con el comportamiento y una línea que lo registra como anotación. `HookDecorator` te da los ganchos "antes / después / falló":
+**2. Escribe tu primer decorador.** Un tipo con el comportamiento, marcado con `@Annotation`. `HookDecorator` te da los ganchos "antes / después / falló":
 
 ```swift
 // Logged.swift
 import AnnotationSwift
 
+@Annotation
 struct Logged: HookDecorator {
     func willCall(_ call: Call) { print("→ \(call)") }
     func didReturn(_ call: Call, result: Any) { print("← \(call) = \(result)") }
     func didThrow(_ call: Call, error: any Error) { print("✗ \(call): \(error)") }
 }
-
-@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
+
+`@Annotation` le dice al plugin `AnnotationRegistry` que genere la declaración de la anotación `@Logged`. Sin el plugin, escríbela tú: `@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")`.
 
 **3. Escribe el segundo**, uno que controle si el cuerpo se ejecuta. Un guardián solo necesita `check`:
 
@@ -64,6 +66,7 @@ import AnnotationSwift
 
 enum AccessError: Error { case forbidden }
 
+@Annotation
 struct Authorized: GuardDecorator {
     nonisolated(unsafe) static var currentRole = "viewer"
     let role: String
@@ -73,8 +76,6 @@ struct Authorized: GuardDecorator {
         guard Self.currentRole == role else { throw AccessError.forbidden }
     }
 }
-
-@attached(peer) macro Authorized(_ role: String) = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
 
 **4. Apílalos.** `@Decorable` en el tipo activa los marcadores; el orden de arriba abajo es el orden de envoltura:
@@ -137,9 +138,40 @@ struct Logged: HookDecorator {
 @attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
 
-### Sin declarar marcadores: `@Decorate(…)`
+### Registro automático: `@Annotation` + plugin
 
-La línea `@attached(peer) macro …` existe porque el compilador exige que `@Logged` sea una macro declarada, y una macro no puede declarar otra. Si no quieres escribirla, pasa los decoradores como valores:
+La línea `@attached(peer) macro …` existe porque el compilador exige que `@Logged` sea una macro declarada, y una macro no puede declarar otra. El plugin `AnnotationRegistry` la escribe por ti antes de compilar, para cada tipo marcado con `@Annotation`, con la firma de sus `init`:
+
+```swift
+@Annotation
+struct Retry: Decorator {
+    init(_ attempts: Int) { … }
+    …
+}
+
+@Decorable
+struct Service {
+    @Logged
+    @Retry(3)                 // sin ninguna declaración escrita a mano
+    func fetch() async throws -> Data { … }
+}
+```
+
+Se activa por target en `Package.swift` (también funciona en proyectos de Xcode):
+
+```swift
+.target(
+    name: "App",
+    dependencies: [.product(name: "AnnotationSwift", package: "experimental-annotation-swift")],
+    plugins: [.plugin(name: "AnnotationRegistry", package: "experimental-annotation-swift")]
+)
+```
+
+El plugin genera `Annotations+Registry.swift` en el directorio de build del módulo; nunca toca tus fuentes. Genéricos, varios `init` (una macro por cada uno) y `public` se respetan; sin `init` explícito usa el memberwise. Decoradores en un módulo compartido: márcalos `public` y el resto de módulos los importa.
+
+### Sin plugin: `@Decorate(…)`
+
+Si no quieres el plugin, pasa los decoradores como valores:
 
 ```swift
 @Decorable
@@ -153,7 +185,7 @@ struct Service {
 }
 ```
 
-Misma cadena, mismo orden (el primero es el más externo), cero declaraciones. A cambio se pierde la sintaxis apilada `@Logged @Retry(3)`. Las dos formas conviven y se mezclan en orden de escritura.
+Misma cadena, mismo orden (el primero es el más externo), cero declaraciones y cero plugins. A cambio se pierde la sintaxis apilada `@Logged @Retry(3)`. Las tres formas (declaración manual, `@Annotation` + plugin, `@Decorate`) conviven y se mezclan en orden de escritura.
 
 ### De función: controlar la continuación
 

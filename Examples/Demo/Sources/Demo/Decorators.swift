@@ -2,24 +2,18 @@
 //  Decorators.swift
 //  Demo
 //
-//  Tres decoradores de función y dos de propiedad. Cada uno es un tipo normal
-//  más una línea que lo registra como anotación.
+//  Tres decoradores de función y dos de propiedad. Cada uno es un tipo normal marcado con
+//  @Annotation: el plugin AnnotationRegistry (activado en Package.swift) genera por ellos la
+//  declaración de marcador, así que `@Logged` o `@Retry(3)` se escriben directo.
 //
 
 import AnnotationSwift
 import Foundation
 
-// MARK: - Registro (solo para la forma apilada `@Logged @Retry(3)`; `@Decorate(Logged())` no lo necesita)
-
-@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
-@attached(peer) macro Retry(_ attempts: Int) = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
-@attached(peer) macro Measured() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
-@attached(peer) macro Trimmed() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
-@attached(peer) macro Lowercased() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
-
 // MARK: - Función
 
 /// Imprime entrada, salida y error. Con `HookDecorator` basta con los ganchos.
+@Annotation
 struct Logged: HookDecorator {
     func willCall(_ call: Call) {
         let arguments = call.arguments.map(\.description).joined(separator: ", ")
@@ -30,6 +24,7 @@ struct Logged: HookDecorator {
 }
 
 /// Reintenta hasta `attempts` veces. Controla la continuación, así que implementa las dos variantes.
+@Annotation
 struct Retry: Decorator {
     let attempts: Int
     init(_ attempts: Int) { self.attempts = attempts }
@@ -51,6 +46,7 @@ struct Retry: Decorator {
 
 /// Mide la duración. Solo necesita "antes" y "después", pero quiere el tiempo entre ambos,
 /// así que implementa `decorate` directamente.
+@Annotation
 struct Measured: Decorator {
     func decorate<Out>(_ call: Call, _ next: () throws -> Out) rethrows -> Out {
         let start = ContinuousClock.now
@@ -66,12 +62,14 @@ struct Measured: Decorator {
 
 // MARK: - Propiedad
 
+@Annotation
 struct Trimmed: PropertyDecorator {
     func decorate(_ value: String, _ property: Property, next: (String) -> String) -> String {
         next(value.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 }
 
+@Annotation
 struct Lowercased: PropertyDecorator {
     func decorate(_ value: String, _ property: Property, next: (String) -> String) -> String {
         next(value.lowercased())

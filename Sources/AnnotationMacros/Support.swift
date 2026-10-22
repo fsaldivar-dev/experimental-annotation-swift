@@ -43,7 +43,7 @@ enum Markers {
         "State", "Binding", "ObservedObject", "StateObject", "Environment", "EnvironmentObject",
         "AppStorage", "SceneStorage", "FocusState", "Published",
         // Esta librería
-        "Decorable", "Decorate", "_DecoratedFunction", "_DecoratedProperty",
+        "Decorable", "Decorate", "Annotation", "_DecoratedFunction", "_DecoratedProperty",
     ]
 
     /// Nombre simple del atributo: para `@AnnotationSwift.Decorable` devuelve `Decorable`.

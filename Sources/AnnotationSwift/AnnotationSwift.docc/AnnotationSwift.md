@@ -34,6 +34,7 @@ El primer marcador es el más externo: `Logged` envuelve a `Retry`, que envuelve
 ### Activar anotaciones
 
 - ``Decorable()``
+- ``Annotation()``
 - ``Decorate(_:)``
 
 ### Decorar funciones

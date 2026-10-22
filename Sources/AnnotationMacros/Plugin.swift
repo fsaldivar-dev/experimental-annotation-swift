@@ -15,6 +15,7 @@ struct AnnotationPlugin: CompilerPlugin {
         DecorableMacro.self,
         MarkerMacro.self,
         DecorateMacro.self,
+        AnnotationMacro.self,
         DecoratedFunctionMacro.self,
         DecoratedPropertyMacro.self,
     ]

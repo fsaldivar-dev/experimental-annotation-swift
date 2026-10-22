@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.0] - Unreleased
 ### Added
+- `@Annotation` sobre el tipo de un decorador y el build-tool plugin `AnnotationRegistry`, que
+  genera antes de compilar la declaración `@attached(peer) macro …` de cada tipo marcado (con la
+  firma de sus `init`, genéricos y `public`). Con el plugin activado, `@Logged` se escribe directo.
 - `@Decorate(Logged(), Retry(3))`: aplica decoradores como valores sin declarar un marcador por
   decorador. Se mezcla con los marcadores clásicos en orden de escritura. Vale para funciones y
   propiedades.

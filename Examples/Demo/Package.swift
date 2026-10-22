@@ -12,7 +12,9 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "Demo",
-            dependencies: [.product(name: "AnnotationSwift", package: "AnnotationSwift")]
+            dependencies: [.product(name: "AnnotationSwift", package: "AnnotationSwift")],
+            // Genera las declaraciones de marcador de los tipos @Annotation antes de compilar.
+            plugins: [.plugin(name: "AnnotationRegistry", package: "AnnotationSwift")]
         ),
     ]
 )
