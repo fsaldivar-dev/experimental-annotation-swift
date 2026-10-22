@@ -33,6 +33,8 @@ jobs:
         run: swift build -v
       - name: Test
         run: swift test
+      - name: Check the Demo's committed annotation registry
+        run: swift package --package-path Examples/Demo --allow-writing-to-package-directory annotation-registry --check
       - name: Build and run the Demo client package
         run: swift run --package-path Examples/Demo
       - name: Test the AdminApp example

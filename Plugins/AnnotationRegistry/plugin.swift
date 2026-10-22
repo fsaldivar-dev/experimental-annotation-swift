@@ -39,6 +39,17 @@ extension AnnotationRegistry: XcodeBuildToolPlugin {
 
 private func command(tool: URL, workDirectory: URL, targetName: String, inputs: [URL]) throws -> Command {
     let output = workDirectory.appending(path: "Annotations+Registry.swift")
+    // Si el target ya trae `AnnotationRegistry.generated.swift` commiteado (command plugin), no se
+    // genera nada: declarar dos veces la misma macro sería un error.
+    if inputs.contains(where: { $0.lastPathComponent == "AnnotationRegistry.generated.swift" }) {
+        return .buildCommand(
+            displayName: "AnnotationSwift: \(targetName) usa AnnotationRegistry.generated.swift commiteado",
+            executable: tool,
+            arguments: [output.path()],       // sin fuentes: archivo vacío
+            inputFiles: [],
+            outputFiles: [output]
+        )
+    }
     return .buildCommand(
         displayName: "AnnotationSwift: registrar anotaciones de \(targetName)",
         executable: tool,

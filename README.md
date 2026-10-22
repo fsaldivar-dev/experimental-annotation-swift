@@ -27,7 +27,7 @@ struct Service {
 
 Cinco minutos: instalar, escribir un decorador, apilarlo y verlo correr.
 
-**1. Añade la dependencia y el plugin** en tu `Package.swift` (Swift 6.2+):
+**1. Añade la dependencia** en tu `Package.swift` (Swift 6.2+):
 
 ```swift
 dependencies: [
@@ -36,8 +36,7 @@ dependencies: [
 targets: [
     .executableTarget(
         name: "MiApp",
-        dependencies: [.product(name: "AnnotationSwift", package: "experimental-annotation-swift")],
-        plugins: [.plugin(name: "AnnotationRegistry", package: "experimental-annotation-swift")]
+        dependencies: [.product(name: "AnnotationSwift", package: "experimental-annotation-swift")]
     )
 ]
 ```
@@ -56,7 +55,13 @@ struct Logged: HookDecorator {
 }
 ```
 
-`@Annotation` le dice al plugin `AnnotationRegistry` que genere la declaración de la anotación `@Logged`. Sin el plugin, escríbela tú: `@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")`.
+`@Annotation` marca el tipo para el generador. Después del paso 3, genera las declaraciones una vez y commitea el archivo:
+
+```bash
+swift package --allow-writing-to-package-directory annotation-registry
+```
+
+Sin generador, escríbela tú: `@attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")`.
 
 **3. Escribe el segundo**, uno que controle si el cuerpo se ejecuta. Un guardián solo necesita `check`:
 
@@ -138,9 +143,9 @@ struct Logged: HookDecorator {
 @attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
 
-### Registro automático: `@Annotation` + plugin
+### Registro automático: `@Annotation` + generador
 
-La línea `@attached(peer) macro …` existe porque el compilador exige que `@Logged` sea una macro declarada, y una macro no puede declarar otra. El plugin `AnnotationRegistry` la escribe por ti antes de compilar, para cada tipo marcado con `@Annotation`, con la firma de sus `init`:
+La línea `@attached(peer) macro …` existe porque el compilador exige que `@Logged` sea una macro declarada, y una macro no puede declarar otra. Marca el tipo con `@Annotation` y deja que el generador escriba esa línea por ti, con la firma de sus `init`:
 
 ```swift
 @Annotation
@@ -157,7 +162,19 @@ struct Service {
 }
 ```
 
-Se activa por target en `Package.swift` (también funciona en proyectos de Xcode):
+Hay dos modos; el generador es el mismo.
+
+**Recomendado: archivo commiteado, cero costo en build.** Un command plugin escribe `AnnotationRegistry.generated.swift` dentro de cada target con tipos `@Annotation`, y lo commiteas como cualquier fuente. Solo corre cuando tú lo pides; en la CI, `--check` falla si alguien añadió un `@Annotation` sin regenerar.
+
+```bash
+swift package --allow-writing-to-package-directory annotation-registry             # escribe o actualiza
+swift package --allow-writing-to-package-directory annotation-registry --check     # CI: no escribe, pero SwiftPM pide el permiso igual
+swift package --allow-writing-to-package-directory annotation-registry --target App
+```
+
+En Xcode: clic derecho sobre el paquete → "annotation-registry". El archivo generado es una línea por decorador, así que compilarlo no cuesta nada; lo que se evita es ejecutar un generador en cada build.
+
+**Alternativa: build-tool plugin, sin commitear nada.** Genera el archivo en el directorio de build antes de compilar. Cómodo para prototipos; en proyectos grandes añade un proceso por build y obliga a compilar la herramienta en cada máquina y en la CI.
 
 ```swift
 .target(
@@ -167,7 +184,7 @@ Se activa por target en `Package.swift` (también funciona en proyectos de Xcode
 )
 ```
 
-El plugin genera `Annotations+Registry.swift` en el directorio de build del módulo; nunca toca tus fuentes. Genéricos, varios `init` (una macro por cada uno) y `public` se respetan; sin `init` explícito usa el memberwise. Decoradores en un módulo compartido: márcalos `public` y el resto de módulos los importa.
+Si un target tiene el archivo commiteado, el build-tool plugin no genera nada: no hay duplicados. En ambos modos se respetan genéricos, varios `init` (una macro por cada uno) y `public`; sin `init` explícito se usa el memberwise. Decoradores en un módulo compartido: márcalos `public` y el resto de módulos los importa.
 
 ### Sin plugin: `@Decorate(…)`
 

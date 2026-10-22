@@ -13,6 +13,9 @@ let package = Package(
         /// Build-tool plugin: genera las declaraciones de marcador de los tipos `@Annotation`
         /// para poder escribir `@Logged` sin registrar nada a mano.
         .plugin(name: "AnnotationRegistry", targets: ["AnnotationRegistry"]),
+        /// Command plugin: `swift package annotation-registry` escribe el registro como fuente commiteable
+        /// (recomendado: cero costo en build); `--check` para la CI.
+        .plugin(name: "AnnotationRegistryCommand", targets: ["AnnotationRegistryCommand"]),
         /// La herramienta del plugin, expuesta para que otros paquetes (por ejemplo JadeAPI)
         /// publiquen su propio plugin de registro sin duplicar el generador.
         .executable(name: "annotation-registry", targets: ["annotation-registry"]),
@@ -46,6 +49,14 @@ let package = Package(
         .plugin(
             name: "AnnotationRegistry",
             capability: .buildTool(),
+            dependencies: ["annotation-registry"]
+        ),
+        .plugin(
+            name: "AnnotationRegistryCommand",
+            capability: .command(
+                intent: .custom(verb: "annotation-registry", description: "Genera AnnotationRegistry.generated.swift con las declaraciones de los tipos @Annotation de cada target (--check para verificar, --target para acotar)"),
+                permissions: [.writeToPackageDirectory(reason: "Escribe AnnotationRegistry.generated.swift dentro de cada target con tipos @Annotation")]
+            ),
             dependencies: ["annotation-registry"]
         ),
 

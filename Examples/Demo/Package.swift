@@ -12,9 +12,12 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "Demo",
-            dependencies: [.product(name: "AnnotationSwift", package: "AnnotationSwift")],
-            // Genera las declaraciones de marcador de los tipos @Annotation antes de compilar.
-            plugins: [.plugin(name: "AnnotationRegistry", package: "AnnotationSwift")]
+            dependencies: [.product(name: "AnnotationSwift", package: "AnnotationSwift")]
+            // Las declaraciones de los tipos @Annotation están commiteadas en
+            // Sources/Demo/AnnotationRegistry.generated.swift, generadas con:
+            //   swift package --allow-writing-to-package-directory annotation-registry
+            // Alternativa sin commitear nada (corre en cada build):
+            //   plugins: [.plugin(name: "AnnotationRegistry", package: "AnnotationSwift")]
         ),
     ]
 )
