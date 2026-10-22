@@ -139,3 +139,28 @@ struct Admin {
         return "done"
     }
 }
+
+/// La forma sin marcadores declarados: los decoradores van como valores.
+@Decorable
+struct Inline {
+    var attempts = 0
+
+    @Decorate(Logged(into: "inline"), Retry(3))
+    mutating func flaky() async throws -> Int {
+        attempts += 1
+        if attempts < 3 { throw Boom() }
+        return attempts
+    }
+
+    /// Mezcla: @Decorate y un marcador clásico, en orden de escritura → Logged, Retry, Authorized.
+    @Decorate(Logged(into: "mixed"))
+    @Authorized("admin")
+    func secret() throws -> String { "s3cr3t" }
+
+    @Decorate(Trimmed(), Lowercased())
+    var email: String = "  PACO@Mail.com "
+
+    @Decorate(Lowercased())
+    @Trimmed
+    var tag: String = "  X  "
+}

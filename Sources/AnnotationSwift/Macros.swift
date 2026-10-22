@@ -36,6 +36,28 @@
 @attached(memberAttribute)
 public macro Decorable() = #externalMacro(module: "AnnotationMacros", type: "DecorableMacro")
 
+/// Aplica decoradores sin declarar marcadores.
+///
+/// Recibe los decoradores como valores, en el orden de envoltura (el primero es el más externo),
+/// y se mezcla con los marcadores clásicos que haya alrededor en orden de escritura:
+///
+/// ```swift
+/// @Decorable
+/// struct Service {
+///     @Decorate(Logged(), Retry(3))
+///     func fetch() async throws -> Data { … }
+///
+///     @Decorate(Trimmed())
+///     @Lowercased                       // marcador declarado: Trimmed → Lowercased
+///     var email: String
+/// }
+/// ```
+///
+/// Es la forma rápida: no hace falta la línea `@attached(peer) macro Logged() = …` por decorador.
+/// A cambio se pierde la sintaxis apilada `@Logged @Retry(3)`. Las dos formas conviven.
+@attached(peer)
+public macro Decorate(_ decorators: Any...) = #externalMacro(module: "AnnotationMacros", type: "DecorateMacro")
+
 /// Macro interna que ``Decorable()`` adjunta a cada función con marcadores. No la uses directamente.
 @attached(body)
 public macro _DecoratedFunction() = #externalMacro(module: "AnnotationMacros", type: "DecoratedFunctionMacro")

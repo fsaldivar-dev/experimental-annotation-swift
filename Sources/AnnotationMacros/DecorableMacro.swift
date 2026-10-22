@@ -19,23 +19,28 @@ public struct DecorableMacro: MemberAttributeMacro {
 
         if declaration.is(ProtocolDeclSyntax.self) {
             if let attributed = member.asProtocol(WithAttributesSyntax.self),
-               let first = Markers.markers(in: attributed.attributes).first {
+               let first = Markers.firstDecoratorAttribute(in: attributed.attributes) {
                 context.error(first, id: "protocol",
                               "@Decorable cannot be applied to a protocol: requirements have no body to wrap; apply it to the conforming type")
             }
             return []
         }
 
+        // `@Decorate()` vacío lo diagnostica DecorateMacro; aquí solo se ignora.
+        if let attributed = member.asProtocol(WithAttributesSyntax.self),
+           Markers.emptyDecorate(in: attributed.attributes) != nil {
+            return []
+        }
+
         if let function = member.as(FunctionDeclSyntax.self) {
-            guard !Markers.markers(in: function.attributes).isEmpty else { return [] }
+            guard Markers.hasDecorators(in: function.attributes) else { return [] }
             return ["@AnnotationSwift._DecoratedFunction"]
         }
 
         if let variable = member.as(VariableDeclSyntax.self) {
-            let markers = Markers.markers(in: variable.attributes)
-            guard !markers.isEmpty else { return [] }
+            guard let first = Markers.firstDecoratorAttribute(in: variable.attributes) else { return [] }
             if declaration.is(ExtensionDeclSyntax.self) {
-                context.error(markers[0], id: "extension",
+                context.error(first, id: "extension",
                               "decorators cannot be applied to properties declared in an extension")
                 return []
             }
@@ -44,12 +49,10 @@ public struct DecorableMacro: MemberAttributeMacro {
         }
 
         // Cualquier otra declaración con marcadores no se puede decorar.
-        if let attributed = member.asProtocol(WithAttributesSyntax.self) {
-            let markers = Markers.markers(in: attributed.attributes)
-            if let first = markers.first {
-                context.error(first, id: "unsupported",
-                              "decorators can only be applied to functions and stored properties")
-            }
+        if let attributed = member.asProtocol(WithAttributesSyntax.self),
+           let first = Markers.firstDecoratorAttribute(in: attributed.attributes) {
+            context.error(first, id: "unsupported",
+                          "decorators can only be applied to functions and stored properties")
         }
         return []
     }

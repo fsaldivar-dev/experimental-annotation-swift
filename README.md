@@ -137,6 +137,24 @@ struct Logged: HookDecorator {
 @attached(peer) macro Logged() = #externalMacro(module: "AnnotationMacros", type: "MarkerMacro")
 ```
 
+### Sin declarar marcadores: `@Decorate(…)`
+
+La línea `@attached(peer) macro …` existe porque el compilador exige que `@Logged` sea una macro declarada, y una macro no puede declarar otra. Si no quieres escribirla, pasa los decoradores como valores:
+
+```swift
+@Decorable
+struct Service {
+    @Decorate(Logged(), Retry(3))
+    func fetch() async throws -> Data { … }
+
+    @Decorate(Trimmed())
+    @Lowercased                      // se mezcla con marcadores: Trimmed → Lowercased
+    var email: String
+}
+```
+
+Misma cadena, mismo orden (el primero es el más externo), cero declaraciones. A cambio se pierde la sintaxis apilada `@Logged @Retry(3)`. Las dos formas conviven y se mezclan en orden de escritura.
+
 ### De función: controlar la continuación
 
 Cuando necesitas decidir si el cuerpo se ejecuta, cuántas veces o con qué resultado, implementa `Decorator`. Recibes `next`, que es "lo que sigue en la cadena": el siguiente decorador o el cuerpo original.

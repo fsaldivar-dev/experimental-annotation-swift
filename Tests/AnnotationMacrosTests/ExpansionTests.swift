@@ -11,6 +11,7 @@ import XCTest
 /// Procesador + marcadores, como los ve un módulo cliente.
 let publicMacros: [String: Macro.Type] = [
     "Decorable": DecorableMacro.self,
+    "Decorate": DecorateMacro.self,
     "Logged": MarkerMacro.self,
     "Retry": MarkerMacro.self,
     "Trimmed": MarkerMacro.self,
@@ -115,6 +116,59 @@ final class ExpansionTests: XCTestCase {
             }
             """,
             macros: internalMacros
+        )
+    }
+
+    func testDecorateFormMixedWithMarkers() {
+        assertMacroExpansion(
+            """
+            struct Service {
+                @_DecoratedFunction
+                @Decorate(Logged(), Retry(3))
+                @Authorized("admin")
+                func ping() throws {
+                    print("pong")
+                }
+            }
+            """,
+            expandedSource: """
+            struct Service {
+                @Decorate(Logged(), Retry(3))
+                @Authorized("admin")
+                func ping() throws {
+                    let __annotation_call = AnnotationSwift.Call(function: "ping()", type: "Service", file: "TestModule/test.swift", line: 2)
+                    return try Logged().decorate(__annotation_call) { () throws -> Void in
+                        return try Retry(3).decorate(__annotation_call) { () throws -> Void in
+                            return try Authorized("admin").decorate(__annotation_call) { () throws -> Void in
+                                print("pong")
+                            }
+                        }
+                    }
+                }
+            }
+            """,
+            macros: internalMacros
+        )
+    }
+
+    func testDecorateEmptyIsRejected() {
+        assertMacroExpansion(
+            """
+            @Decorable
+            struct Service {
+                @Decorate()
+                func ping() {}
+            }
+            """,
+            expandedSource: """
+            struct Service {
+                func ping() {}
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "@Decorate needs at least one decorator, e.g. @Decorate(Logged(), Retry(3))", line: 3, column: 5),
+            ],
+            macros: publicMacros
         )
     }
 
