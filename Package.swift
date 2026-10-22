@@ -13,6 +13,9 @@ let package = Package(
         /// Build-tool plugin: genera las declaraciones de marcador de los tipos `@Annotation`
         /// para poder escribir `@Logged` sin registrar nada a mano.
         .plugin(name: "AnnotationRegistry", targets: ["AnnotationRegistry"]),
+        /// La herramienta del plugin, expuesta para que otros paquetes (por ejemplo JadeAPI)
+        /// publiquen su propio plugin de registro sin duplicar el generador.
+        .executable(name: "annotation-registry", targets: ["annotation-registry"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0"..<"605.0.0"),
